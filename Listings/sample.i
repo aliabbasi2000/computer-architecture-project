@@ -2021,7 +2021,11 @@ extern __attribute__((__nothrow__)) void __use_no_heap_region(void);
 extern __attribute__((__nothrow__)) char const *__C_library_version_string(void);
 extern __attribute__((__nothrow__)) int __C_library_version_number(void);
 # 29 "Source/sample.c" 2
-# 44 "Source/sample.c"
+# 46 "Source/sample.c"
+int redPillPositions[6][2] = {
+    {2, 3}, {4, 5}, {6, 7}, {8, 9}, {10, 11}, {12, 13} // Example positions
+};
+
 void DrawMaze() {
     int rows = 16; // Rows for pills (240 pills = 12 rows * 20 cols)
     int cols = 15; // Columns for pills
@@ -2059,13 +2063,26 @@ void DrawMaze() {
                   (j == 2 && i >= 2 && i <= 10) || // Left vertical wall
                   (j == 18 && i >= 2 && i <= 10) || // Right vertical wall
                   (j == 10 && i >= 4 && i <= 8))) { // Center vertical wall
-                LCD_SetPoint(pill_x, pill_y, 0xFFE0);
+
+                // Check if the current position is one of the red pill positions
+                int isRedPill = 0;
+                for (int k = 0; k < 6; k++) {
+                    if (redPillPositions[k][0] == i && redPillPositions[k][1] == j) {
+                        isRedPill = 1;
+                        break;
+                    }
+                }
+
+                // Display red pill if this position matches one of the predefined red pill positions
+                if (isRedPill) {
+                    LCD_DrawCircle(pill_x, pill_y, 5, 0xF800); // 0xF800 pill color
+                } else {
+                    LCD_SetPoint(pill_x, pill_y, 0xFFE0); // Regular pill color
+                }
             }
         }
     }
 }
-
-
 
 void InitializeDisplay() {
     // Clear the screen and set the background color
@@ -2077,13 +2094,11 @@ void InitializeDisplay() {
     // Display the Timer
     GUI_Text(5, 5, (uint8_t *)"Timer: 60s", 0xF800, 0x0000);
 
-  // Draw the lives
-  GUI_Text(5, 320 - 20, (uint8_t *)"Remaining Lives: 3", 0xF800, 0x0000);
+    // Draw the lives
+    GUI_Text(5, 320 - 20, (uint8_t *)"Remaining Lives: 3", 0xF800, 0x0000);
 
     // Draw the game board
     DrawMaze();
-
-
 }
 
 int main(void) {

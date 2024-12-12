@@ -2252,7 +2252,76 @@ void LCD_SetPoint(uint16_t Xpos,uint16_t Ypos,uint16_t point)
  LCD_SetCursor(Xpos,Ypos);
  LCD_WriteReg(0x0022,point);
 }
-# 517 "Source/GLCD/GLCD.c"
+
+
+
+
+
+
+void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t color) {
+
+ int x = radius;
+ int y = 0;
+ int decisionOver2 = 1 - x; // Initial decision parameter
+
+
+
+    while (y <= x) {
+
+        // Draw the 8 symmetrical points and fill between them horizontally
+
+        LCD_SetPoint(Xpos + x, Ypos + y, color);
+
+        LCD_SetPoint(Xpos - x, Ypos + y, color);
+
+        LCD_SetPoint(Xpos + x, Ypos - y, color);
+
+        LCD_SetPoint(Xpos - x, Ypos - y, color);
+
+        LCD_SetPoint(Xpos + y, Ypos + x, color);
+
+        LCD_SetPoint(Xpos - y, Ypos + x, color);
+
+        LCD_SetPoint(Xpos + y, Ypos - x, color);
+
+        LCD_SetPoint(Xpos - y, Ypos - x, color);
+
+
+
+        // Fill the horizontal line at each y level
+
+        int i;
+
+        for ( i = -x; i <= x; i++) {
+
+            LCD_SetPoint(Xpos + i, Ypos + y, color); // Top half
+
+            LCD_SetPoint(Xpos + i, Ypos - y, color); // Bottom half
+
+        }
+
+
+
+        // Update the decision parameter and the coordinates
+
+        y++;
+
+        if (decisionOver2 <= 0) {
+
+            decisionOver2 += 2 * y + 1;
+
+        } else {
+
+            x--;
+
+            decisionOver2 += 2 * (y - x) + 1;
+
+        }
+
+    }
+
+}
+# 589 "Source/GLCD/GLCD.c"
 void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t color )
 {
     short dx,dy;
@@ -2334,7 +2403,7 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
         LCD_SetPoint(x0,y0,color);
  }
 }
-# 611 "Source/GLCD/GLCD.c"
+# 683 "Source/GLCD/GLCD.c"
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor )
 {
  uint16_t i, j;
@@ -2356,7 +2425,7 @@ void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, ui
         }
     }
 }
-# 645 "Source/GLCD/GLCD.c"
+# 717 "Source/GLCD/GLCD.c"
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor)
 {
     uint8_t TempChar;

@@ -502,6 +502,78 @@ void LCD_SetPoint(uint16_t Xpos,uint16_t Ypos,uint16_t point)
 	LCD_WriteReg(0x0022,point);
 }
 
+
+
+/******************************************************************************
+* Function Name  : LCD_DrawCircle
+*******************************************************************************/
+void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t color) {
+
+	int x = radius;
+	int y = 0;
+	int decisionOver2 = 1 - x; // Initial decision parameter
+
+
+
+    while (y <= x) {
+
+        // Draw the 8 symmetrical points and fill between them horizontally
+
+        LCD_SetPoint(Xpos + x, Ypos + y, color);
+
+        LCD_SetPoint(Xpos - x, Ypos + y, color);
+
+        LCD_SetPoint(Xpos + x, Ypos - y, color);
+
+        LCD_SetPoint(Xpos - x, Ypos - y, color);
+
+        LCD_SetPoint(Xpos + y, Ypos + x, color);
+
+        LCD_SetPoint(Xpos - y, Ypos + x, color);
+
+        LCD_SetPoint(Xpos + y, Ypos - x, color);
+
+        LCD_SetPoint(Xpos - y, Ypos - x, color);
+
+
+
+        // Fill the horizontal line at each y level
+
+        int i;
+
+        for ( i = -x; i <= x; i++) {
+
+            LCD_SetPoint(Xpos + i, Ypos + y, color); // Top half
+
+            LCD_SetPoint(Xpos + i, Ypos - y, color); // Bottom half
+
+        }
+
+
+
+        // Update the decision parameter and the coordinates
+
+        y++;
+
+        if (decisionOver2 <= 0) {
+
+            decisionOver2 += 2 * y + 1;
+
+        } else {
+
+            x--;
+
+            decisionOver2 += 2 * (y - x) + 1;
+
+        }
+
+    }
+
+}
+
+
+
+
 /******************************************************************************
 * Function Name  : LCD_DrawLine
 * Description    : Bresenham's line algorithm

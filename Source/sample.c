@@ -39,7 +39,13 @@ extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emul
 #define BG_COLOR      Black
 #define TEXT_COLOR    Red
 #define POWER_PILL_COLOR Red
+#define NUM_RED_PILLS 6 
+#define POWER_PILL_RADIUS 5
 
+
+int redPillPositions[NUM_RED_PILLS][2] = {
+    {2, 3}, {4, 5}, {6, 7}, {8, 9}, {10, 11}, {12, 13}  // Example positions
+};
 
 void DrawMaze() {
     int rows = 16; // Rows for pills (240 pills = 12 rows * 20 cols)
@@ -78,13 +84,26 @@ void DrawMaze() {
                   (j == 2 && i >= 2 && i <= 10) ||                        // Left vertical wall
                   (j == 18 && i >= 2 && i <= 10) ||                       // Right vertical wall
                   (j == 10 && i >= 4 && i <= 8))) {                       // Center vertical wall
-                LCD_SetPoint(pill_x, pill_y, PILL_COLOR);
+                
+                // Check if the current position is one of the red pill positions
+                int isRedPill = 0;
+                for (int k = 0; k < NUM_RED_PILLS; k++) {
+                    if (redPillPositions[k][0] == i && redPillPositions[k][1] == j) {
+                        isRedPill = 1;
+                        break;
+                    }
+                }
+
+                // Display red pill if this position matches one of the predefined red pill positions
+                if (isRedPill) {
+                    LCD_DrawCircle(pill_x, pill_y, POWER_PILL_RADIUS, POWER_PILL_COLOR);  // Red pill color
+                } else {
+                    LCD_SetPoint(pill_x, pill_y, PILL_COLOR);  // Regular pill color
+                }
             }
         }
     }
 }
-
-
 
 void InitializeDisplay() {
     // Clear the screen and set the background color
@@ -95,14 +114,12 @@ void InitializeDisplay() {
 
     // Display the Timer
     GUI_Text(5, 5, (uint8_t *)"Timer: 60s", TEXT_COLOR, BG_COLOR);
-	
-		// Draw the lives
-		GUI_Text(5, SCREEN_HEIGHT - 20, (uint8_t *)"Remaining Lives: 3", TEXT_COLOR, BG_COLOR);
+    
+    // Draw the lives
+    GUI_Text(5, SCREEN_HEIGHT - 20, (uint8_t *)"Remaining Lives: 3", TEXT_COLOR, BG_COLOR);
 
     // Draw the game board
     DrawMaze();
-	
-		
 }
 
 int main(void) {
@@ -117,7 +134,6 @@ int main(void) {
 
     return 0;
 }
-
 
 /*
 int main(void)
