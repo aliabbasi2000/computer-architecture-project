@@ -1837,37 +1837,49 @@ extern void reset_timer( uint8_t timer_num );
 extern void TIMER0_IRQHandler (void);
 extern void TIMER1_IRQHandler (void);
 # 28 "Source/sample.c" 2
+# 41 "Source/sample.c"
+void DrawLabyrinth() {
+    int rows = 240 / 20 // Size of each cell in the labyrinth grid;
+    int cols = 320 / 20 // Size of each cell in the labyrinth grid;
 
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            // Draw walls or pills based on desired labyrinth layout
+            if ((i == 0 || i == rows - 1) || (j == 0 || j == cols - 1)) {
+                // Draw walls at the boundaries
+                LCD_DrawLine(j * 20 // Size of each cell in the labyrinth grid, i * 20 // Size of each cell in the labyrinth grid, (j + 1) * 20 // Size of each cell in the labyrinth grid, i * 20 // Size of each cell in the labyrinth grid, 0x001F); // Top border
+                LCD_DrawLine(j * 20 // Size of each cell in the labyrinth grid, i * 20 // Size of each cell in the labyrinth grid, j * 20 // Size of each cell in the labyrinth grid, (i + 1) * 20 // Size of each cell in the labyrinth grid, 0x001F); // Left border
+            } else {
+                // Draw pills in the labyrinth cells
+                LCD_SetPoint(j * 20 // Size of each cell in the labyrinth grid + 20 // Size of each cell in the labyrinth grid / 2, i * 20 // Size of each cell in the labyrinth grid + 20 // Size of each cell in the labyrinth grid / 2, 0xFFFF);
+            }
+        }
+    }
+}
 
+void InitializeDisplay() {
+    // Clear the screen and set the background color
+    LCD_Clear(0x0000);
 
+    // Display the Score
+    GUI_Text(120, 5, (uint8_t *)"Score: 00", 0xF800, 0x0000);
 
+    // Display the Timer
+    GUI_Text(5, 5, (uint8_t *)"Timer: 60s", 0xF800, 0x0000);
 
+    // Draw the game board
+    DrawLabyrinth();
+}
 
+int main(void) {
+    SystemInit();
+    LCD_Initialization();
 
-int main(void)
-{
-  SystemInit();
+    InitializeDisplay();
 
-  LCD_Initialization();
+    while (1) {
+        // Main loop
+    }
 
-   TP_Init();
- TouchPanel_Calibrate();
-
- LCD_Clear(0x0000);
- GUI_Text(0, 280, (uint8_t *) " touch here : 1 sec to clear  ", 0xF800, 0xFFFF);
- //LCD_DrawLine(0, 0, 200, 200, 0xFFFF);
- //init_timer(0, 0x1312D0 );
- //init_timer(0, 0x6108 );
- init_timer(0, 0x4E2 );
- //init_timer(0, 0xC8 );
-
- enable_timer(0);
-
- ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->PCON |= 0x1;
- ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->PCON &= ~(0x2);
-
-  while (1)
-  {
-  __asm("wfi");
-  }
+    return 0;
 }
