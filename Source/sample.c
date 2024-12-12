@@ -25,37 +25,66 @@
 #include "GLCD/GLCD.h" 
 #include "TouchPanel/TouchPanel.h"
 #include "timer/timer.h"
+#include <stdlib.h>
 
 #ifdef SIMULATOR
 extern uint8_t ScaleFlag; // <- ScaleFlag needs to visible in order for the emulator to find the symbol (can be placed also inside system_LPC17xx.h but since it is RO, it needs more work)
 #endif
 
-#define SCREEN_WIDTH  320
-#define SCREEN_HEIGHT 240
-#define CELL_SIZE     20  // Size of each cell in the labyrinth grid
-#define PILL_COLOR    White
+#define SCREEN_WIDTH  240
+#define SCREEN_HEIGHT 320
+#define CELL_SIZE     15  // Size of each cell in the labyrinth grid
+#define PILL_COLOR    Yellow
 #define WALL_COLOR    Blue
 #define BG_COLOR      Black
 #define TEXT_COLOR    Red
+#define POWER_PILL_COLOR Red
 
-void DrawLabyrinth() {
-    int rows = SCREEN_HEIGHT / CELL_SIZE;
-    int cols = SCREEN_WIDTH / CELL_SIZE;
 
+void DrawMaze() {
+    int rows = 16; // Rows for pills (240 pills = 12 rows * 20 cols)
+    int cols = 15; // Columns for pills
+    int start_x = (SCREEN_WIDTH - cols * CELL_SIZE) / 2; // Center horizontally
+    int start_y = 40; // Start drawing below the text area
+
+    // Draw walls (maze structure)
+    LCD_DrawLine(start_x, start_y, start_x + cols * CELL_SIZE, start_y, WALL_COLOR); // Top wall
+    LCD_DrawLine(start_x, start_y, start_x, start_y + rows * CELL_SIZE, WALL_COLOR); // Left wall
+    LCD_DrawLine(start_x + cols * CELL_SIZE, start_y, start_x + cols * CELL_SIZE, start_y + rows * CELL_SIZE, WALL_COLOR); // Right wall
+    LCD_DrawLine(start_x, start_y + rows * CELL_SIZE, start_x + cols * CELL_SIZE, start_y + rows * CELL_SIZE, WALL_COLOR); // Bottom wall
+
+    // Additional inner maze walls
+    // Horizontal lines
+    LCD_DrawLine(start_x + CELL_SIZE * 2, start_y + CELL_SIZE * 2, start_x + CELL_SIZE * 18, start_y + CELL_SIZE * 2, WALL_COLOR);
+    LCD_DrawLine(start_x + CELL_SIZE * 4, start_y + CELL_SIZE * 6, start_x + CELL_SIZE * 16, start_y + CELL_SIZE * 6, WALL_COLOR);
+    LCD_DrawLine(start_x + CELL_SIZE * 6, start_y + CELL_SIZE * 10, start_x + CELL_SIZE * 14, start_y + CELL_SIZE * 10, WALL_COLOR);
+
+    // Vertical lines
+    LCD_DrawLine(start_x + CELL_SIZE * 2, start_y + CELL_SIZE * 2, start_x + CELL_SIZE * 2, start_y + CELL_SIZE * 10, WALL_COLOR);
+    LCD_DrawLine(start_x + CELL_SIZE * 18, start_y + CELL_SIZE * 2, start_x + CELL_SIZE * 18, start_y + CELL_SIZE * 10, WALL_COLOR);
+    LCD_DrawLine(start_x + CELL_SIZE * 10, start_y + CELL_SIZE * 4, start_x + CELL_SIZE * 10, start_y + CELL_SIZE * 8, WALL_COLOR);
+
+    // Fill the remaining cells with pills
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            // Draw walls or pills based on desired labyrinth layout
-            if ((i == 0 || i == rows - 1) || (j == 0 || j == cols - 1)) {
-                // Draw walls at the boundaries
-                LCD_DrawLine(j * CELL_SIZE, i * CELL_SIZE, (j + 1) * CELL_SIZE, i * CELL_SIZE, WALL_COLOR); // Top border
-                LCD_DrawLine(j * CELL_SIZE, i * CELL_SIZE, j * CELL_SIZE, (i + 1) * CELL_SIZE, WALL_COLOR); // Left border
-            } else {
-                // Draw pills in the labyrinth cells
-                LCD_SetPoint(j * CELL_SIZE + CELL_SIZE / 2, i * CELL_SIZE + CELL_SIZE / 2, PILL_COLOR);
+            int pill_x = start_x + j * CELL_SIZE + CELL_SIZE / 2;
+            int pill_y = start_y + i * CELL_SIZE + CELL_SIZE / 2;
+
+            // Skip pills where walls are located
+            if (!((i == 0 || i == rows - 1 || j == 0 || j == cols - 1) ||  // Boundary walls
+                  (i == 2 && j >= 2 && j <= 18) ||                        // Top horizontal wall
+                  (i == 6 && j >= 4 && j <= 16) ||                        // Middle horizontal wall
+                  (i == 10 && j >= 6 && j <= 14) ||                       // Bottom horizontal wall
+                  (j == 2 && i >= 2 && i <= 10) ||                        // Left vertical wall
+                  (j == 18 && i >= 2 && i <= 10) ||                       // Right vertical wall
+                  (j == 10 && i >= 4 && i <= 8))) {                       // Center vertical wall
+                LCD_SetPoint(pill_x, pill_y, PILL_COLOR);
             }
         }
     }
 }
+
+
 
 void InitializeDisplay() {
     // Clear the screen and set the background color
@@ -66,9 +95,14 @@ void InitializeDisplay() {
 
     // Display the Timer
     GUI_Text(5, 5, (uint8_t *)"Timer: 60s", TEXT_COLOR, BG_COLOR);
+	
+		// Draw the lives
+		GUI_Text(5, SCREEN_HEIGHT - 20, (uint8_t *)"Remaining Lives: 3", TEXT_COLOR, BG_COLOR);
 
     // Draw the game board
-    DrawLabyrinth();
+    DrawMaze();
+	
+		
 }
 
 int main(void) {

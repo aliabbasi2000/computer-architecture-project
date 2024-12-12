@@ -1837,25 +1837,235 @@ extern void reset_timer( uint8_t timer_num );
 extern void TIMER0_IRQHandler (void);
 extern void TIMER1_IRQHandler (void);
 # 28 "Source/sample.c" 2
-# 41 "Source/sample.c"
-void DrawLabyrinth() {
-    int rows = 240 / 20 // Size of each cell in the labyrinth grid;
-    int cols = 320 / 20 // Size of each cell in the labyrinth grid;
+# 1 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 1 3
+# 71 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+    typedef unsigned int size_t;
+# 91 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+    typedef unsigned short wchar_t;
 
+
+
+
+typedef struct div_t { int quot, rem; } div_t;
+
+typedef struct ldiv_t { long int quot, rem; } ldiv_t;
+# 139 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) int __aeabi_MB_CUR_MAX(void);
+# 158 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) double atof(const char * ) __attribute__((__nonnull__(1)));
+
+
+
+
+
+extern __attribute__((__nothrow__)) int atoi(const char * ) __attribute__((__nonnull__(1)));
+
+
+
+
+
+extern __attribute__((__nothrow__)) long int atol(const char * ) __attribute__((__nonnull__(1)));
+# 185 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) double strtod(const char * __restrict , char ** __restrict ) __attribute__((__nonnull__(1)));
+# 212 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) long int strtol(const char * __restrict ,
+                        char ** __restrict , int ) __attribute__((__nonnull__(1)));
+# 243 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) unsigned long int strtoul(const char * __restrict ,
+                                       char ** __restrict , int ) __attribute__((__nonnull__(1)));
+# 275 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) long long strtoll(const char * __restrict ,
+                                  char ** __restrict , int )
+                          __attribute__((__nonnull__(1)));
+
+
+
+
+
+
+extern __attribute__((__nothrow__)) unsigned long long strtoull(const char * __restrict ,
+                                            char ** __restrict , int )
+                                   __attribute__((__nonnull__(1)));
+
+
+
+
+
+
+extern __attribute__((__nothrow__)) int rand(void);
+# 303 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) void srand(unsigned int );
+# 313 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+struct _rand_state { int __x[57]; };
+extern __attribute__((__nothrow__)) int _rand_r(struct _rand_state *);
+extern __attribute__((__nothrow__)) void _srand_r(struct _rand_state *, unsigned int);
+struct _ANSI_rand_state { int __x[1]; };
+extern __attribute__((__nothrow__)) int _ANSI_rand_r(struct _ANSI_rand_state *);
+extern __attribute__((__nothrow__)) void _ANSI_srand_r(struct _ANSI_rand_state *, unsigned int);
+
+
+
+
+
+extern __attribute__((__nothrow__)) void *calloc(size_t , size_t );
+
+
+
+
+
+extern __attribute__((__nothrow__)) void free(void * );
+
+
+
+
+
+
+
+extern __attribute__((__nothrow__)) void *malloc(size_t );
+
+
+
+
+
+extern __attribute__((__nothrow__)) void *realloc(void * , size_t );
+# 374 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+typedef int (*__heapprt)(void *, char const *, ...);
+extern __attribute__((__nothrow__)) void __heapstats(int (* )(void * ,
+                                           char const * , ...),
+                        void * ) __attribute__((__nonnull__(1)));
+# 390 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) int __heapvalid(int (* )(void * ,
+                                           char const * , ...),
+                       void * , int ) __attribute__((__nonnull__(1)));
+# 411 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) __attribute__((__noreturn__)) void abort(void);
+# 422 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) int atexit(void (* )(void)) __attribute__((__nonnull__(1)));
+# 444 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) __attribute__((__noreturn__)) void exit(int );
+# 460 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) __attribute__((__noreturn__)) void _Exit(int );
+# 471 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) char *getenv(const char * ) __attribute__((__nonnull__(1)));
+# 484 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) int system(const char * );
+# 497 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern void *bsearch(const void * , const void * ,
+              size_t , size_t ,
+              int (* )(const void *, const void *)) __attribute__((__nonnull__(1,2,5)));
+# 532 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern void qsort(void * , size_t , size_t ,
+           int (* )(const void *, const void *)) __attribute__((__nonnull__(1,4)));
+# 560 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) __attribute__((__const__)) int abs(int );
+
+
+
+
+
+
+extern __attribute__((__nothrow__)) __attribute__((__const__)) div_t div(int , int );
+# 579 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) __attribute__((__const__)) long int labs(long int );
+# 589 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) __attribute__((__const__)) ldiv_t ldiv(long int , long int );
+# 644 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+typedef struct __sdiv32by16 { long quot, rem; } __sdiv32by16;
+typedef struct __udiv32by16 { unsigned long quot, rem; } __udiv32by16;
+
+typedef struct __sdiv64by32 { long rem, quot; } __sdiv64by32;
+
+__attribute__((__value_in_regs__)) extern __attribute__((__nothrow__)) __attribute__((__const__)) __sdiv32by16 __rt_sdiv32by16(
+     int ,
+     short int );
+
+
+
+__attribute__((__value_in_regs__)) extern __attribute__((__nothrow__)) __attribute__((__const__)) __udiv32by16 __rt_udiv32by16(
+     unsigned int ,
+     unsigned short );
+
+
+
+__attribute__((__value_in_regs__)) extern __attribute__((__nothrow__)) __attribute__((__const__)) __sdiv64by32 __rt_sdiv64by32(
+     int , unsigned int ,
+     int );
+
+
+
+
+
+
+
+extern __attribute__((__nothrow__)) unsigned int __fp_status(unsigned int , unsigned int );
+# 705 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) int mblen(const char * , size_t );
+# 720 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) int mbtowc(wchar_t * __restrict ,
+                   const char * __restrict , size_t );
+# 739 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) int wctomb(char * , wchar_t );
+# 761 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) size_t mbstowcs(wchar_t * __restrict ,
+                      const char * __restrict , size_t ) __attribute__((__nonnull__(2)));
+# 779 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) size_t wcstombs(char * __restrict ,
+                      const wchar_t * __restrict , size_t ) __attribute__((__nonnull__(2)));
+# 798 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
+extern __attribute__((__nothrow__)) void __use_realtime_heap(void);
+extern __attribute__((__nothrow__)) void __use_realtime_division(void);
+extern __attribute__((__nothrow__)) void __use_two_region_memory(void);
+extern __attribute__((__nothrow__)) void __use_no_heap(void);
+extern __attribute__((__nothrow__)) void __use_no_heap_region(void);
+
+extern __attribute__((__nothrow__)) char const *__C_library_version_string(void);
+extern __attribute__((__nothrow__)) int __C_library_version_number(void);
+# 29 "Source/sample.c" 2
+# 44 "Source/sample.c"
+void DrawMaze() {
+    int rows = 16; // Rows for pills (240 pills = 12 rows * 20 cols)
+    int cols = 15; // Columns for pills
+    int start_x = (240 - cols * 15 // Size of each cell in the labyrinth grid) / 2; // Center horizontally
+    int start_y = 40; // Start drawing below the text area
+
+    // Draw walls (maze structure)
+    LCD_DrawLine(start_x, start_y, start_x + cols * 15 // Size of each cell in the labyrinth grid, start_y, 0x001F); // Top wall
+    LCD_DrawLine(start_x, start_y, start_x, start_y + rows * 15 // Size of each cell in the labyrinth grid, 0x001F); // Left wall
+    LCD_DrawLine(start_x + cols * 15 // Size of each cell in the labyrinth grid, start_y, start_x + cols * 15 // Size of each cell in the labyrinth grid, start_y + rows * 15 // Size of each cell in the labyrinth grid, 0x001F); // Right wall
+    LCD_DrawLine(start_x, start_y + rows * 15 // Size of each cell in the labyrinth grid, start_x + cols * 15 // Size of each cell in the labyrinth grid, start_y + rows * 15 // Size of each cell in the labyrinth grid, 0x001F); // Bottom wall
+
+    // Additional inner maze walls
+    // Horizontal lines
+    LCD_DrawLine(start_x + 15 // Size of each cell in the labyrinth grid * 2, start_y + 15 // Size of each cell in the labyrinth grid * 2, start_x + 15 // Size of each cell in the labyrinth grid * 18, start_y + 15 // Size of each cell in the labyrinth grid * 2, 0x001F);
+    LCD_DrawLine(start_x + 15 // Size of each cell in the labyrinth grid * 4, start_y + 15 // Size of each cell in the labyrinth grid * 6, start_x + 15 // Size of each cell in the labyrinth grid * 16, start_y + 15 // Size of each cell in the labyrinth grid * 6, 0x001F);
+    LCD_DrawLine(start_x + 15 // Size of each cell in the labyrinth grid * 6, start_y + 15 // Size of each cell in the labyrinth grid * 10, start_x + 15 // Size of each cell in the labyrinth grid * 14, start_y + 15 // Size of each cell in the labyrinth grid * 10, 0x001F);
+
+    // Vertical lines
+    LCD_DrawLine(start_x + 15 // Size of each cell in the labyrinth grid * 2, start_y + 15 // Size of each cell in the labyrinth grid * 2, start_x + 15 // Size of each cell in the labyrinth grid * 2, start_y + 15 // Size of each cell in the labyrinth grid * 10, 0x001F);
+    LCD_DrawLine(start_x + 15 // Size of each cell in the labyrinth grid * 18, start_y + 15 // Size of each cell in the labyrinth grid * 2, start_x + 15 // Size of each cell in the labyrinth grid * 18, start_y + 15 // Size of each cell in the labyrinth grid * 10, 0x001F);
+    LCD_DrawLine(start_x + 15 // Size of each cell in the labyrinth grid * 10, start_y + 15 // Size of each cell in the labyrinth grid * 4, start_x + 15 // Size of each cell in the labyrinth grid * 10, start_y + 15 // Size of each cell in the labyrinth grid * 8, 0x001F);
+
+    // Fill the remaining cells with pills
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            // Draw walls or pills based on desired labyrinth layout
-            if ((i == 0 || i == rows - 1) || (j == 0 || j == cols - 1)) {
-                // Draw walls at the boundaries
-                LCD_DrawLine(j * 20 // Size of each cell in the labyrinth grid, i * 20 // Size of each cell in the labyrinth grid, (j + 1) * 20 // Size of each cell in the labyrinth grid, i * 20 // Size of each cell in the labyrinth grid, 0x001F); // Top border
-                LCD_DrawLine(j * 20 // Size of each cell in the labyrinth grid, i * 20 // Size of each cell in the labyrinth grid, j * 20 // Size of each cell in the labyrinth grid, (i + 1) * 20 // Size of each cell in the labyrinth grid, 0x001F); // Left border
-            } else {
-                // Draw pills in the labyrinth cells
-                LCD_SetPoint(j * 20 // Size of each cell in the labyrinth grid + 20 // Size of each cell in the labyrinth grid / 2, i * 20 // Size of each cell in the labyrinth grid + 20 // Size of each cell in the labyrinth grid / 2, 0xFFFF);
+            int pill_x = start_x + j * 15 // Size of each cell in the labyrinth grid + 15 // Size of each cell in the labyrinth grid / 2;
+            int pill_y = start_y + i * 15 // Size of each cell in the labyrinth grid + 15 // Size of each cell in the labyrinth grid / 2;
+
+            // Skip pills where walls are located
+            if (!((i == 0 || i == rows - 1 || j == 0 || j == cols - 1) || // Boundary walls
+                  (i == 2 && j >= 2 && j <= 18) || // Top horizontal wall
+                  (i == 6 && j >= 4 && j <= 16) || // Middle horizontal wall
+                  (i == 10 && j >= 6 && j <= 14) || // Bottom horizontal wall
+                  (j == 2 && i >= 2 && i <= 10) || // Left vertical wall
+                  (j == 18 && i >= 2 && i <= 10) || // Right vertical wall
+                  (j == 10 && i >= 4 && i <= 8))) { // Center vertical wall
+                LCD_SetPoint(pill_x, pill_y, 0xFFE0);
             }
         }
     }
 }
+
+
 
 void InitializeDisplay() {
     // Clear the screen and set the background color
@@ -1867,8 +2077,13 @@ void InitializeDisplay() {
     // Display the Timer
     GUI_Text(5, 5, (uint8_t *)"Timer: 60s", 0xF800, 0x0000);
 
+  // Draw the lives
+  GUI_Text(5, 320 - 20, (uint8_t *)"Remaining Lives: 3", 0xF800, 0x0000);
+
     // Draw the game board
-    DrawLabyrinth();
+    DrawMaze();
+
+
 }
 
 int main(void) {
