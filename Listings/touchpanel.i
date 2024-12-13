@@ -1793,6 +1793,7 @@ void LCD_SetPoint(uint16_t Xpos,uint16_t Ypos,uint16_t point);
 void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t color );
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
+void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t color);
 # 25 "Source/TouchPanel/TouchPanel.c" 2
 # 1 "Source/TouchPanel\\../TouchPanel/TouchPanel.h" 1
 # 30 "Source/TouchPanel\\../TouchPanel/TouchPanel.h"

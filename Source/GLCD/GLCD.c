@@ -572,6 +572,17 @@ void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t colo
 }
 
 
+void LCD_DrawRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
+
+    LCD_DrawLine(x, y, x + width, y, color);            // Top edge
+
+    LCD_DrawLine(x, y, x, y + height, color);           // Left edge
+
+    LCD_DrawLine(x + width, y, x + width, y + height, color);  // Right edge
+
+    LCD_DrawLine(x, y + height, x + width, y + height, color);  // Bottom edge
+
+}
 
 
 /******************************************************************************
