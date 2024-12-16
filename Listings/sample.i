@@ -2361,12 +2361,13 @@ int pacman_x, pacman_y;
 int score = 0;
 int game_over_flag = 0;
 int countdown = 60;
+int lives = 1;
 
 // Maze representation
 int mazeGrid[16][15] = {
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-    {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 3},
-    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 1, 3},
+    {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 3},
+    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 2, 3},
     {3, 1, 3, 0, 3, 1, 3, 3, 3, 3, 1, 3, 0, 1, 3},
     {3, 1, 3, 0, 3, 1, 3, 0, 0, 3, 1, 3, 0, 1, 3},
     {3, 1, 3, 0, 3, 1, 3, 0, 0, 3, 1, 3, 0, 1, 3},
@@ -2396,6 +2397,14 @@ void DrawScore() {
     sprintf(scoreText, "Score: %d", score);
     LCD_DrawRect(100, 0, 239, 20, 0x0000);
     GUI_Text(120, 5, (uint8_t *)scoreText, 0xF800, 0x0000);
+}
+
+
+void DrawLives(){
+  char scoreText[20];
+  sprintf(scoreText, "Remaining Lives: %d", lives);
+    LCD_DrawRect(10, 320 - 20, 100, 20, 0x0000);
+  GUI_Text(5, 320 - 20, (uint8_t *)scoreText, 0xF800, 0x0000);
 }
 
 void DrawPacMan(int x, int y) {
@@ -2442,8 +2451,13 @@ void MovePacMan(int dx, int dy) {
         score += 10;
         mazeGrid[new_y][new_x] = 0;
     } else if (mazeGrid[new_y][new_x] == 2) {
-        score += 50;
+        score += 990;
         mazeGrid[new_y][new_x] = 0;
+    }
+
+  // Check for extra life
+    if (score / 1000 > (score - 10) / 1000 ) {
+        lives++;
     }
 
     ErasePacMan(pacman_x, pacman_y); // Erase current position
@@ -2451,6 +2465,7 @@ void MovePacMan(int dx, int dy) {
     pacman_y = new_y;
     DrawPacMan(pacman_x, pacman_y); // Draw new position
     DrawScore();
+  DrawLives();
 }
 
 void DrawMaze() {
@@ -2495,8 +2510,7 @@ void InitializeDisplay() {
     LCD_Clear(0x0000);
     DrawScore();
   DrawCountdown();
-    GUI_Text(5, 320 - 20, (uint8_t *)"Remaining Lives: 3", 0xF800, 0x0000);
-
+  DrawLives();
     DrawMaze();
 
     pacman_x = 1;

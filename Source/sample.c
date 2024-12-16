@@ -38,12 +38,13 @@ int pacman_x, pacman_y;
 int score = 0;
 int game_over_flag = 0;
 int countdown = 60;
+int lives = 1;
 
 // Maze representation
 int mazeGrid[GRID_ROWS][GRID_COLS] = {
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-    {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 3},
-    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 1, 3},
+    {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 3},
+    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 2, 3},
     {3, 1, 3, 0, 3, 1, 3, 3, 3, 3, 1, 3, 0, 1, 3},
     {3, 1, 3, 0, 3, 1, 3, 0, 0, 3, 1, 3, 0, 1, 3},
     {3, 1, 3, 0, 3, 1, 3, 0, 0, 3, 1, 3, 0, 1, 3},
@@ -73,6 +74,14 @@ void DrawScore() {
     sprintf(scoreText, "Score: %d", score);
     LCD_DrawRect(100, 0, 239, 20, BG_COLOR);
     GUI_Text(120, 5, (uint8_t *)scoreText, TEXT_COLOR, BG_COLOR);
+}
+
+
+void DrawLives(){
+		char scoreText[20];
+		sprintf(scoreText, "Remaining Lives: %d", lives);
+    LCD_DrawRect(10, SCREEN_HEIGHT - 20, 100, 20, BG_COLOR);
+		GUI_Text(5, SCREEN_HEIGHT - 20, (uint8_t *)scoreText, TEXT_COLOR, BG_COLOR);
 }
 
 void DrawPacMan(int x, int y) {
@@ -119,8 +128,13 @@ void MovePacMan(int dx, int dy) {
         score += 10;
         mazeGrid[new_y][new_x] = EMPTY;
     } else if (mazeGrid[new_y][new_x] == POWER_PILL) {
-        score += 50;
+        score += 990;
         mazeGrid[new_y][new_x] = EMPTY;
+    }
+		
+		// Check for extra life
+    if (score / 1000 > (score - 10) / 1000 ) {
+        lives++;
     }
 
     ErasePacMan(pacman_x, pacman_y); // Erase current position
@@ -128,6 +142,7 @@ void MovePacMan(int dx, int dy) {
     pacman_y = new_y;
     DrawPacMan(pacman_x, pacman_y); // Draw new position
     DrawScore();
+		DrawLives();
 }
 
 void DrawMaze() {
@@ -172,8 +187,7 @@ void InitializeDisplay() {
     LCD_Clear(BG_COLOR);
     DrawScore();
 		DrawCountdown();
-    GUI_Text(5, SCREEN_HEIGHT - 20, (uint8_t *)"Remaining Lives: 3", TEXT_COLOR, BG_COLOR);
-
+		DrawLives();
     DrawMaze();
 
     pacman_x = 1;
