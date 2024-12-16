@@ -15,6 +15,8 @@ extern uint8_t ScaleFlag;
 #define SCREEN_WIDTH  240
 #define SCREEN_HEIGHT 320
 #define CELL_SIZE     15
+#define GRID_ROWS     16
+#define GRID_COLS     15
 #define PILL_COLOR    Yellow
 #define WALL_COLOR    Blue
 #define BG_COLOR      Black
@@ -38,7 +40,7 @@ int redPillPositions[NUM_RED_PILLS][2] = {
 
 int pacman_x, pacman_y;
 int score = 0;
-int pillGrid[16][15] = {0};
+int pillGrid[GRID_ROWS][GRID_COLS] = {0};
 
 void DrawScore() {
     char scoreText[20];
@@ -48,13 +50,13 @@ void DrawScore() {
 }
 
 void DrawPacMan(int x, int y) {
-    int screen_x = (SCREEN_WIDTH - 15 * CELL_SIZE) / 2 + x * CELL_SIZE + CELL_SIZE / 2;
+    int screen_x = (SCREEN_WIDTH - GRID_COLS * CELL_SIZE) / 2 + x * CELL_SIZE + CELL_SIZE / 2;
     int screen_y = 40 + y * CELL_SIZE + CELL_SIZE / 2;
     LCD_DrawCircle(screen_x, screen_y, PAC_MAN_RADIUS, PACMAN_COLOR);
 }
 
 void ErasePacMan(int x, int y) {
-    int screen_x = (SCREEN_WIDTH - 15 * CELL_SIZE) / 2 + x * CELL_SIZE + CELL_SIZE / 2;
+    int screen_x = (SCREEN_WIDTH - GRID_COLS * CELL_SIZE) / 2 + x * CELL_SIZE + CELL_SIZE / 2;
     int screen_y = 40 + y * CELL_SIZE + CELL_SIZE / 2;
     LCD_DrawCircle(screen_x, screen_y, PAC_MAN_RADIUS, BG_COLOR);
 }
@@ -63,7 +65,7 @@ void MovePacMan(int dx, int dy) {
     int new_x = pacman_x + dx;
     int new_y = pacman_y + dy;
 
-    if (new_x < 0 || new_x >= 15 || new_y < 0 || new_y >= 16) {
+    if (new_x < 0 || new_x >= GRID_COLS || new_y < 0 || new_y >= GRID_ROWS) {
         return;
     }
 
@@ -83,55 +85,36 @@ void MovePacMan(int dx, int dy) {
 }
 
 void DrawMaze() {
-    int rows = 16;
-    int cols = 15;
-    int start_x = (SCREEN_WIDTH - cols * CELL_SIZE) / 2;
+    int start_x = (SCREEN_WIDTH - GRID_COLS * CELL_SIZE) / 2;
     int start_y = 40;
 
-    LCD_DrawLine(start_x, start_y, start_x + cols * CELL_SIZE, start_y, WALL_COLOR);
-    LCD_DrawLine(start_x, start_y, start_x, start_y + rows * CELL_SIZE, WALL_COLOR);
-    LCD_DrawLine(start_x + cols * CELL_SIZE, start_y, start_x + cols * CELL_SIZE, start_y + rows * CELL_SIZE, WALL_COLOR);
-    LCD_DrawLine(start_x, start_y + rows * CELL_SIZE, start_x + cols * CELL_SIZE, start_y + rows * CELL_SIZE, WALL_COLOR);
+    // Draw maze borders
+    LCD_DrawLine(start_x, start_y, start_x + GRID_COLS * CELL_SIZE, start_y, WALL_COLOR);
+    LCD_DrawLine(start_x, start_y, start_x, start_y + GRID_ROWS * CELL_SIZE, WALL_COLOR);
+    LCD_DrawLine(start_x + GRID_COLS * CELL_SIZE, start_y, start_x + GRID_COLS * CELL_SIZE, start_y + GRID_ROWS * CELL_SIZE, WALL_COLOR);
+    LCD_DrawLine(start_x, start_y + GRID_ROWS * CELL_SIZE, start_x + GRID_COLS * CELL_SIZE, start_y + GRID_ROWS * CELL_SIZE, WALL_COLOR);
 
-    LCD_DrawLine(start_x + CELL_SIZE * 2, start_y + CELL_SIZE * 2, start_x + CELL_SIZE * 18, start_y + CELL_SIZE * 2, WALL_COLOR);
-    LCD_DrawLine(start_x + CELL_SIZE * 4, start_y + CELL_SIZE * 6, start_x + CELL_SIZE * 16, start_y + CELL_SIZE * 6, WALL_COLOR);
-    LCD_DrawLine(start_x + CELL_SIZE * 6, start_y + CELL_SIZE * 10, start_x + CELL_SIZE * 14, start_y + CELL_SIZE * 10, WALL_COLOR);
+    // Draw walls
+    LCD_DrawLine(start_x + CELL_SIZE * 2, start_y + CELL_SIZE * 2, start_x + CELL_SIZE * 13, start_y + CELL_SIZE * 2, WALL_COLOR);
+    LCD_DrawLine(start_x + CELL_SIZE * 4, start_y + CELL_SIZE * 6, start_x + CELL_SIZE * 11, start_y + CELL_SIZE * 6, WALL_COLOR);
+    LCD_DrawLine(start_x + CELL_SIZE * 6, start_y + CELL_SIZE * 10, start_x + CELL_SIZE * 9, start_y + CELL_SIZE * 10, WALL_COLOR);
 
     LCD_DrawLine(start_x + CELL_SIZE * 2, start_y + CELL_SIZE * 2, start_x + CELL_SIZE * 2, start_y + CELL_SIZE * 10, WALL_COLOR);
-    LCD_DrawLine(start_x + CELL_SIZE * 18, start_y + CELL_SIZE * 2, start_x + CELL_SIZE * 18, start_y + CELL_SIZE * 10, WALL_COLOR);
-    LCD_DrawLine(start_x + CELL_SIZE * 10, start_y + CELL_SIZE * 4, start_x + CELL_SIZE * 10, start_y + CELL_SIZE * 8, WALL_COLOR);
+    LCD_DrawLine(start_x + CELL_SIZE * 13, start_y + CELL_SIZE * 2, start_x + CELL_SIZE * 13, start_y + CELL_SIZE * 10, WALL_COLOR);
 
-		int i;
-    for (i = 0; i < rows; i++) {
-      int j;
-			for (j = 0; j < cols; j++) {
+    // Draw pills
+    for (int i = 0; i < GRID_ROWS; i++) {
+        for (int j = 0; j < GRID_COLS; j++) {
+            if (pillGrid[i][j] == 0) {
+                continue;
+            }
+
             int pill_x = start_x + j * CELL_SIZE + CELL_SIZE / 2;
             int pill_y = start_y + i * CELL_SIZE + CELL_SIZE / 2;
-
-            if (!((i == 0 || i == rows - 1 || j == 0 || j == cols - 1) ||
-                  (i == 2 && j >= 2 && j <= 18) ||
-                  (i == 6 && j >= 4 && j <= 16) ||
-                  (i == 10 && j >= 6 && j <= 14) ||
-                  (j == 2 && i >= 2 && i <= 10) ||
-                  (j == 18 && i >= 2 && i <= 10) ||
-                  (j == 10 && i >= 4 && i <= 8))) {
-
-                int isRedPill = 0;
-								int k;
-                for (k = 0; k < NUM_RED_PILLS; k++) {
-                    if (redPillPositions[k][0] == i && redPillPositions[k][1] == j) {
-                        isRedPill = 1;
-                        break;
-                    }
-                }
-
-                if (isRedPill) {
-                    LCD_DrawCircle(pill_x, pill_y, POWER_PILL_RADIUS, POWER_PILL_COLOR);
-                    pillGrid[i][j] = 2;
-                } else {
-                    LCD_SetPoint(pill_x, pill_y, PILL_COLOR);
-                    pillGrid[i][j] = 1;
-                }
+            if (pillGrid[i][j] == 1) {
+                LCD_SetPoint(pill_x, pill_y, PILL_COLOR);
+            } else if (pillGrid[i][j] == 2) {
+                LCD_DrawCircle(pill_x, pill_y, POWER_PILL_RADIUS, POWER_PILL_COLOR);
             }
         }
     }
@@ -141,12 +124,27 @@ void InitializeDisplay() {
     LCD_Clear(BG_COLOR);
     DrawScore();
     GUI_Text(5, SCREEN_HEIGHT - 20, (uint8_t *)"Remaining Lives: 3", TEXT_COLOR, BG_COLOR);
+
+    // Initialize grid and pills
+		int i;
+    for (i = 0; i < GRID_ROWS; i++) {
+        for (int j = 0; j < GRID_COLS; j++) {
+            pillGrid[i][j] = 1;
+        }
+    }
+		
+		//--------------------------------------------------
+		//int i; 
+    for (i = 0; i < NUM_RED_PILLS; i++) {
+        pillGrid[redPillPositions[i][0]][redPillPositions[i][1]] = 2;
+    }
+
     DrawMaze();
+
     pacman_x = 7;
     pacman_y = 8;
     DrawPacMan(pacman_x, pacman_y);
 }
-
 
 int main(void) {
     SystemInit();

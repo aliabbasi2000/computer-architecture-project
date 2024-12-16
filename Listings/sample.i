@@ -2344,7 +2344,7 @@ extern void enable_RIT( void );
 extern void disable_RIT( void );
 extern void reset_RIT( void );
 # 10 "Source/sample.c" 2
-# 28 "Source/sample.c"
+# 30 "Source/sample.c"
 void delay_ms(unsigned int ms) {
     unsigned int i;
     for (i = 0; i < ms * 10000; i++) {
@@ -2403,55 +2403,36 @@ void MovePacMan(int dx, int dy) {
 }
 
 void DrawMaze() {
-    int rows = 16;
-    int cols = 15;
-    int start_x = (240 - cols * 15) / 2;
+    int start_x = (240 - 15 * 15) / 2;
     int start_y = 40;
 
-    LCD_DrawLine(start_x, start_y, start_x + cols * 15, start_y, 0x001F);
-    LCD_DrawLine(start_x, start_y, start_x, start_y + rows * 15, 0x001F);
-    LCD_DrawLine(start_x + cols * 15, start_y, start_x + cols * 15, start_y + rows * 15, 0x001F);
-    LCD_DrawLine(start_x, start_y + rows * 15, start_x + cols * 15, start_y + rows * 15, 0x001F);
+    // Draw maze borders
+    LCD_DrawLine(start_x, start_y, start_x + 15 * 15, start_y, 0x001F);
+    LCD_DrawLine(start_x, start_y, start_x, start_y + 16 * 15, 0x001F);
+    LCD_DrawLine(start_x + 15 * 15, start_y, start_x + 15 * 15, start_y + 16 * 15, 0x001F);
+    LCD_DrawLine(start_x, start_y + 16 * 15, start_x + 15 * 15, start_y + 16 * 15, 0x001F);
 
-    LCD_DrawLine(start_x + 15 * 2, start_y + 15 * 2, start_x + 15 * 18, start_y + 15 * 2, 0x001F);
-    LCD_DrawLine(start_x + 15 * 4, start_y + 15 * 6, start_x + 15 * 16, start_y + 15 * 6, 0x001F);
-    LCD_DrawLine(start_x + 15 * 6, start_y + 15 * 10, start_x + 15 * 14, start_y + 15 * 10, 0x001F);
+    // Draw walls
+    LCD_DrawLine(start_x + 15 * 2, start_y + 15 * 2, start_x + 15 * 13, start_y + 15 * 2, 0x001F);
+    LCD_DrawLine(start_x + 15 * 4, start_y + 15 * 6, start_x + 15 * 11, start_y + 15 * 6, 0x001F);
+    LCD_DrawLine(start_x + 15 * 6, start_y + 15 * 10, start_x + 15 * 9, start_y + 15 * 10, 0x001F);
 
     LCD_DrawLine(start_x + 15 * 2, start_y + 15 * 2, start_x + 15 * 2, start_y + 15 * 10, 0x001F);
-    LCD_DrawLine(start_x + 15 * 18, start_y + 15 * 2, start_x + 15 * 18, start_y + 15 * 10, 0x001F);
-    LCD_DrawLine(start_x + 15 * 10, start_y + 15 * 4, start_x + 15 * 10, start_y + 15 * 8, 0x001F);
+    LCD_DrawLine(start_x + 15 * 13, start_y + 15 * 2, start_x + 15 * 13, start_y + 15 * 10, 0x001F);
 
-  int i;
-    for (i = 0; i < rows; i++) {
-      int j;
-   for (j = 0; j < cols; j++) {
+    // Draw pills
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 15; j++) {
+            if (pillGrid[i][j] == 0) {
+                continue;
+            }
+
             int pill_x = start_x + j * 15 + 15 / 2;
             int pill_y = start_y + i * 15 + 15 / 2;
-
-            if (!((i == 0 || i == rows - 1 || j == 0 || j == cols - 1) ||
-                  (i == 2 && j >= 2 && j <= 18) ||
-                  (i == 6 && j >= 4 && j <= 16) ||
-                  (i == 10 && j >= 6 && j <= 14) ||
-                  (j == 2 && i >= 2 && i <= 10) ||
-                  (j == 18 && i >= 2 && i <= 10) ||
-                  (j == 10 && i >= 4 && i <= 8))) {
-
-                int isRedPill = 0;
-        int k;
-                for (k = 0; k < 6; k++) {
-                    if (redPillPositions[k][0] == i && redPillPositions[k][1] == j) {
-                        isRedPill = 1;
-                        break;
-                    }
-                }
-
-                if (isRedPill) {
-                    LCD_DrawCircle(pill_x, pill_y, 5, 0xFFE0);
-                    pillGrid[i][j] = 2;
-                } else {
-                    LCD_SetPoint(pill_x, pill_y, 0xFFE0);
-                    pillGrid[i][j] = 1;
-                }
+            if (pillGrid[i][j] == 1) {
+                LCD_SetPoint(pill_x, pill_y, 0xFFE0);
+            } else if (pillGrid[i][j] == 2) {
+                LCD_DrawCircle(pill_x, pill_y, 5, 0xFFE0);
             }
         }
     }
@@ -2461,12 +2442,27 @@ void InitializeDisplay() {
     LCD_Clear(0x0000);
     DrawScore();
     GUI_Text(5, 320 - 20, (uint8_t *)"Remaining Lives: 3", 0xF800, 0x0000);
+
+    // Initialize grid and pills
+  int i;
+    for (i = 0; i < 16; i++) {
+        for (int j = 0; j < 15; j++) {
+            pillGrid[i][j] = 1;
+        }
+    }
+
+  //--------------------------------------------------
+  //int i;
+    for (i = 0; i < 6; i++) {
+        pillGrid[redPillPositions[i][0]][redPillPositions[i][1]] = 2;
+    }
+
     DrawMaze();
+
     pacman_x = 7;
     pacman_y = 8;
     DrawPacMan(pacman_x, pacman_y);
 }
-
 
 int main(void) {
     SystemInit();
