@@ -1794,6 +1794,8 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
 void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t color);
+void LCD_FillRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+void LCD_DrawRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
 # 24 "Source/GLCD/GLCD.c" 2
 # 1 "Source/GLCD\\AsciiLib.h" 1
 # 26 "Source/GLCD\\AsciiLib.h"
@@ -2324,6 +2326,10 @@ void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t colo
 }
 
 
+
+
+
+
 void LCD_DrawRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
 
     LCD_DrawLine(x, y, x + width, y, color); // Top edge
@@ -2335,7 +2341,19 @@ void LCD_DrawRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint1
     LCD_DrawLine(x, y + height, x + width, y + height, color); // Bottom edge
 
 }
-# 600 "Source/GLCD/GLCD.c"
+
+
+
+
+
+
+
+void LCD_FillRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
+    for (uint16_t i = 0; i <= height; i++) {
+        LCD_DrawLine(x, y + i, x + width, y + i, color); // Draw horizontal lines to fill
+    }
+}
+# 617 "Source/GLCD/GLCD.c"
 void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t color )
 {
     short dx,dy;
@@ -2417,7 +2435,7 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
         LCD_SetPoint(x0,y0,color);
  }
 }
-# 694 "Source/GLCD/GLCD.c"
+# 711 "Source/GLCD/GLCD.c"
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor )
 {
  uint16_t i, j;
@@ -2439,7 +2457,7 @@ void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, ui
         }
     }
 }
-# 728 "Source/GLCD/GLCD.c"
+# 745 "Source/GLCD/GLCD.c"
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor)
 {
     uint8_t TempChar;

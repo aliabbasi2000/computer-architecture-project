@@ -1805,6 +1805,8 @@ void LCD_DrawLine( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 , uint16_t
 void PutChar( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
 void GUI_Text(uint16_t Xpos, uint16_t Ypos, uint8_t *str,uint16_t Color, uint16_t bkColor);
 void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t color);
+void LCD_FillRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
+void LCD_DrawRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
 # 13 "Source/RIT/IRQ_RIT.c" 2
 # 1 "./Source\\TouchPanel/TouchPanel.h" 1
 # 30 "./Source\\TouchPanel/TouchPanel.h"

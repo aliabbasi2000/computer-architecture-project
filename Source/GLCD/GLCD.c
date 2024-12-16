@@ -572,6 +572,10 @@ void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t colo
 }
 
 
+/******
+* Function Name  : LCD_DrawRect
+*******/
+
 void LCD_DrawRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
 
     LCD_DrawLine(x, y, x + width, y, color);            // Top edge
@@ -583,6 +587,19 @@ void LCD_DrawRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint1
     LCD_DrawLine(x, y + height, x + width, y + height, color);  // Bottom edge
 
 }
+
+
+
+/******
+* Function Name  : LCD_FillRect
+*******/
+
+void LCD_FillRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
+    for (uint16_t i = 0; i <= height; i++) {
+        LCD_DrawLine(x, y + i, x + width, y + i, color); // Draw horizontal lines to fill
+    }
+}
+
 
 
 /******************************************************************************
