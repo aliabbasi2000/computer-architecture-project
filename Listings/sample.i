@@ -2337,7 +2337,10 @@ int joystick_read_right(void);
 # 1 "Source\\RIT/RIT.h" 1
 # 13 "Source\\RIT/RIT.h"
 void RIT_IRQHandler(void);
-
+void DrawCountdown(void);
+void MovePacMan(int dx, int dy);
+extern int game_over_flag;
+extern int countdown;
 
 
 
@@ -2346,7 +2349,7 @@ extern void enable_RIT( void );
 extern void disable_RIT( void );
 extern void reset_RIT( void );
 # 10 "Source/sample.c" 2
-# 29 "Source/sample.c"
+# 30 "Source/sample.c"
 // Maze definitions
 
 
@@ -2356,6 +2359,8 @@ extern void reset_RIT( void );
 // Game state variables
 int pacman_x, pacman_y;
 int score = 0;
+int game_over_flag = 0;
+int countdown = 60;
 
 // Maze representation
 int mazeGrid[16][15] = {
@@ -2384,6 +2389,9 @@ void delay_ms(unsigned int ms) {
 }
 
 void DrawScore() {
+  if(game_over_flag){
+   return;
+  }
     char scoreText[20];
     sprintf(scoreText, "Score: %d", score);
     LCD_DrawRect(100, 0, 239, 20, 0x0000);
@@ -2403,11 +2411,30 @@ void ErasePacMan(int x, int y) {
 }
 
 void MovePacMan(int dx, int dy) {
+    if (game_over_flag) {
+        return;
+    }
+
     int new_x = pacman_x + dx;
     int new_y = pacman_y + dy;
 
-    if (new_x < 0 || new_x >= 15 || new_y < 0 || new_y >= 16 || mazeGrid[new_y][new_x] == 3) {
-        return;
+    // Check if Pac-Man is out of bounds (teleport logic)
+    if (new_y >= 0 && new_y < 16 && new_x >= 0 && new_x < 15) {
+        // Normal movement within bounds
+        if (mazeGrid[new_y][new_x] == 3) {
+            return; // Block movement if hitting a wall
+        }
+    } else {
+        // Teleportation: Adjust coordinates based on the side
+        if (new_x < 0) { // Left teleport
+            new_x = 15 - 1;
+        } else if (new_x >= 15) { // Right teleport
+            new_x = 0;
+        } else if (new_y < 0) { // Top teleport
+            new_y = 16 - 1;
+        } else if (new_y >= 16) { // Bottom teleport
+            new_y = 0;
+        }
     }
 
     // Collect pills or power pills
@@ -2419,10 +2446,10 @@ void MovePacMan(int dx, int dy) {
         mazeGrid[new_y][new_x] = 0;
     }
 
-    ErasePacMan(pacman_x, pacman_y);
+    ErasePacMan(pacman_x, pacman_y); // Erase current position
     pacman_x = new_x;
     pacman_y = new_y;
-    DrawPacMan(pacman_x, pacman_y);
+    DrawPacMan(pacman_x, pacman_y); // Draw new position
     DrawScore();
 }
 
@@ -2451,9 +2478,23 @@ void DrawMaze() {
     }
 }
 
+void DrawCountdown() {
+    char countdownText[20];
+    sprintf(countdownText, "Time: %02d", countdown); // Use %02d for two-digit formatting
+    LCD_DrawRect(100, 20, 239, 40, 0x0000); // Clear the area where the countdown will be displayed
+    GUI_Text(40, 5, (uint8_t *)countdownText, 0xF800, 0x0000); // Display the countdown text
+}
+
+void DrawGameOver() {
+    char gameOverText[] = "Game Over!";
+    LCD_DrawRect(80, 140, 160, 40, 0x0000); // Clear the area
+    GUI_Text(90, 150, (uint8_t *)gameOverText, 0xF800, 0x0000); // Display Game Over message
+}
+
 void InitializeDisplay() {
     LCD_Clear(0x0000);
     DrawScore();
+  DrawCountdown();
     GUI_Text(5, 320 - 20, (uint8_t *)"Remaining Lives: 3", 0xF800, 0x0000);
 
     DrawMaze();
@@ -2469,12 +2510,16 @@ int main(void) {
     joystick_init();
     InitializeDisplay();
 
-    init_RIT(0x004C4B40);
+    init_RIT(25000000); //25MHz
     enable_RIT();
 
     while (1) {
+        if (game_over_flag) {
+            GUI_Text(80, 150, (uint8_t *)"Game Over", 0xF800, 0x0000); // Display game over message
+            while (1) {
+                __asm("wfi"); // Halt game loop
+            }
+        }
         __asm("wfi"); // Wait for interrupt
     }
-
-    return 0;
 }

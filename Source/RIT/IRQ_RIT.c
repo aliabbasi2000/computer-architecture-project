@@ -27,15 +27,27 @@
 **
 ******************************************************************************/
 
+
+
 void RIT_IRQHandler(void) {
-    if (joystick_read_up()) {
-        MovePacMan(0, -1); // Move up
-    } else if (joystick_read_down()) {
-        MovePacMan(0, 1); // Move down
-    } else if (joystick_read_left()) {
-        MovePacMan(-1, 0); // Move left
-    } else if (joystick_read_right()) {
-        MovePacMan(1, 0); // Move right
+    if (countdown > 0) {
+        countdown--; // Decrease the countdown by 1 every second
+        DrawCountdown(); // Update display
+    } else if (countdown == 0) {
+        game_over_flag = 1; // Set the game-over flag when countdown reaches zero
+				DrawGameOver();
+    }
+
+    if (!game_over_flag) { // Allow joystick movements only if game is not over
+        if (joystick_read_up()) {
+            MovePacMan(0, -1); // Move up
+        } else if (joystick_read_down()) {
+            MovePacMan(0, 1); // Move down
+        } else if (joystick_read_left()) {
+            MovePacMan(-1, 0); // Move left
+        } else if (joystick_read_right()) {
+            MovePacMan(1, 0); // Move right
+        }
     }
 
     LPC_RIT->RICTRL |= 0x1; // Clear interrupt flag

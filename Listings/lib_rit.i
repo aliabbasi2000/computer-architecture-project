@@ -1786,7 +1786,10 @@ typedef struct
 # 1 "Source/RIT\\RIT.h" 1
 # 13 "Source/RIT\\RIT.h"
 void RIT_IRQHandler(void);
-
+void DrawCountdown(void);
+void MovePacMan(int dx, int dy);
+extern int game_over_flag;
+extern int countdown;
 
 
 

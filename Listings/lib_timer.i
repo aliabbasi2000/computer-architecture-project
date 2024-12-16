@@ -1793,7 +1793,7 @@ extern void reset_timer( uint8_t timer_num );
 extern void TIMER0_IRQHandler (void);
 extern void TIMER1_IRQHandler (void);
 # 12 "Source/timer/lib_timer.c" 2
-# 22 "Source/timer/lib_timer.c"
+# 21 "Source/timer/lib_timer.c"
 void enable_timer( uint8_t timer_num )
 {
   if ( timer_num == 0 )
@@ -1806,7 +1806,7 @@ void enable_timer( uint8_t timer_num )
   }
   return;
 }
-# 44 "Source/timer/lib_timer.c"
+# 43 "Source/timer/lib_timer.c"
 void disable_timer( uint8_t timer_num )
 {
   if ( timer_num == 0 )
@@ -1819,7 +1819,7 @@ void disable_timer( uint8_t timer_num )
   }
   return;
 }
-# 66 "Source/timer/lib_timer.c"
+# 65 "Source/timer/lib_timer.c"
 void reset_timer( uint8_t timer_num )
 {
   uint32_t regVal;
