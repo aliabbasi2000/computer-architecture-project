@@ -2384,6 +2384,7 @@ volatile int current_direction_x = 0; // X direction (horizontal movement)
 volatile int current_direction_y = 0; // Y direction (vertical movement)
 
 // Maze representation
+
 int mazeGrid[18][16] = {
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
     {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 3},
@@ -2404,10 +2405,7 @@ int mazeGrid[18][16] = {
     {3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3},
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}
 };
-
-
-
-
+# 101 "Source/sample.c"
 void delay_ms(unsigned int ms) {
     unsigned int i;
     for (i = 0; i < ms * 10000; i++) {
@@ -2474,10 +2472,10 @@ int checkVictory() {
 }
 
 void DrawVictoryScreen() {
-    LCD_Clear(0x0000); // Clear the screen
+    LCD_Clear(0xFFFF); // Clear the screen
     char victoryText[] = "Victory!";
-    LCD_DrawRect(80, 140, 160, 40, 0x0000); // Clear the area
-    GUI_Text(90, 150, (uint8_t *)victoryText, 0xF800, 0x0000); // Display Victory message
+    LCD_DrawRect(80, 140, 160, 40, 0xFFFF); // Clear the area
+    GUI_Text(90, 150, (uint8_t *)victoryText, 0xF800, 0xFFFF); // Display Victory message
 }
 
 

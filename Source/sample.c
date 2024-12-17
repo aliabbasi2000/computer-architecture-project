@@ -48,6 +48,7 @@ volatile int current_direction_x = 0; // X direction (horizontal movement)
 volatile int current_direction_y = 0; // Y direction (vertical movement)
 
 // Maze representation
+/* real maze */
 int mazeGrid[GRID_ROWS][GRID_COLS] = {
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
     {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 3},
@@ -69,6 +70,31 @@ int mazeGrid[GRID_ROWS][GRID_COLS] = {
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}
 };
 
+
+
+/* Test 
+
+int mazeGrid[GRID_ROWS][GRID_COLS] = {
+    {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+    {3, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2, 0, 0, 3},
+    {3, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 3, 3, 2, 0, 3},
+    {3, 0, 0, 0, 3, 0, 3, 3, 3, 3, 0, 3, 0, 0, 0, 3},
+    {3, 0, 0, 0, 3, 0, 3, 0, 0, 3, 0, 3, 0, 0, 0, 3},
+    {3, 0, 0, 0, 3, 0, 3, 0, 0, 3, 0, 3, 0, 0, 0, 3},
+    {3, 0, 0, 0, 3, 0, 3, 3, 3, 3, 0, 0, 0, 0, 0, 3},
+    {3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+    {0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0},
+    {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+    {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+    {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+    {3, 0, 3, 0, 3, 0, 3, 3, 3, 3, 0, 0, 0, 0, 0, 3},
+    {3, 0, 3, 0, 3, 0, 3, 3, 3, 3, 0, 0, 3, 0, 0, 3},
+    {3, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3},
+    {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+    {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+    {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}
+};
+*/
 
 
 
@@ -138,10 +164,10 @@ int checkVictory() {
 }
 
 void DrawVictoryScreen() {
-    LCD_Clear(BG_COLOR);  // Clear the screen
+    LCD_Clear(White);  // Clear the screen
     char victoryText[] = "Victory!";
-    LCD_DrawRect(80, 140, 160, 40, BG_COLOR);  // Clear the area
-    GUI_Text(90, 150, (uint8_t *)victoryText, TEXT_COLOR, BG_COLOR);  // Display Victory message
+    LCD_DrawRect(80, 140, 160, 40, White);  // Clear the area
+    GUI_Text(90, 150, (uint8_t *)victoryText, TEXT_COLOR, White);  // Display Victory message
 }
 
 

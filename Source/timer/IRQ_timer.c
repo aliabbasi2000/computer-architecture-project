@@ -56,7 +56,6 @@ void CapturePauseArea(void) {
 }
 
 
-
 // Function to restore the background when resuming
 void RestorePauseArea(void) {
     int i;

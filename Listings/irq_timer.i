@@ -2310,7 +2310,6 @@ void CapturePauseArea(void) {
 }
 
 
-
 // Function to restore the background when resuming
 void RestorePauseArea(void) {
     int i;
@@ -2347,7 +2346,7 @@ void EINT0_IRQHandler(void) {
         RestorePauseArea();
     }
 }
-# 154 "Source/timer/IRQ_timer.c"
+# 153 "Source/timer/IRQ_timer.c"
 void TIMER1_IRQHandler (void)
 {
   ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->IR = 1;
