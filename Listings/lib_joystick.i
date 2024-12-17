@@ -5,7 +5,7 @@
 # 1 "<command line>" 1
 # 1 "<built-in>" 2
 # 1 "Source/joystick/lib_joystick.c" 2
-# 11 "Source/joystick/lib_joystick.c"
+
 # 1 "E:/Keil/Installer/Keil/LPC1700_DFP/2.7.1/Device/Include\\LPC17xx.h" 1
 # 41 "E:/Keil/Installer/Keil/LPC1700_DFP/2.7.1/Device/Include\\LPC17xx.h"
 typedef enum IRQn
@@ -1782,7 +1782,7 @@ typedef struct
        uint32_t RESERVED8;
   volatile uint32_t Module_ID;
 } LPC_EMAC_TypeDef;
-# 12 "Source/joystick/lib_joystick.c" 2
+# 3 "Source/joystick/lib_joystick.c" 2
 # 1 "Source/joystick\\joystick.h" 1
 # 14 "Source/joystick\\joystick.h"
 void joystick_init(void);
@@ -1790,7 +1790,7 @@ int joystick_read_up(void);
 int joystick_read_down(void);
 int joystick_read_left(void);
 int joystick_read_right(void);
-# 13 "Source/joystick/lib_joystick.c" 2
+# 4 "Source/joystick/lib_joystick.c" 2
 
 void joystick_init(void) {
     // Configure pins for joystick directions as GPIO inputs

@@ -44,6 +44,9 @@ int direction_x = 0;
 int direction_y = 0;
 int interruptCounter = 0;
 
+volatile int current_direction_x = 0; // X direction (horizontal movement)
+volatile int current_direction_y = 0; // Y direction (vertical movement)
+
 // Maze representation
 int mazeGrid[GRID_ROWS][GRID_COLS] = {
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
@@ -177,33 +180,39 @@ void MovePacMan(int dx, int dy) {
     int new_x = pacman_x + dx;
     int new_y = pacman_y + dy;
 
-    // Check if Pac-Man is out of bounds (teleport logic)
+    // Check if Pac-Man hits a wall
     if (new_y >= 0 && new_y < GRID_ROWS && new_x >= 0 && new_x < GRID_COLS) {
-        // Normal movement within bounds
         if (mazeGrid[new_y][new_x] == WALL) {
-            return; // Block movement if hitting a wall
+            // Stop Pac-Man if hitting a wall
+            current_direction_x = 0;
+            current_direction_y = 0;
+            return;
         }
     } else {
-        // Teleportation: Adjust coordinates based on the side
-        if (new_x < 0) { // Left teleport
-            new_x = GRID_COLS - 1;
-        } else if (new_x >= GRID_COLS) { // Right teleport
-            new_x = 0;
-        } else if (new_y < 0) { // Top teleport
-            new_y = GRID_ROWS - 1;
-        } else if (new_y >= GRID_ROWS) { // Bottom teleport
-            new_y = 0;
-        }
+        // Teleport logic if out of bounds
+        if (new_x < 0) new_x = GRID_COLS - 1;
+        else if (new_x >= GRID_COLS) new_x = 0;
+        if (new_y < 0) new_y = GRID_ROWS - 1;
+        else if (new_y >= GRID_ROWS) new_y = 0;
     }
 
+    // Update Pac-Man's position
+    ErasePacMan(pacman_x, pacman_y);  // Erase old position
+    pacman_x = new_x;
+    pacman_y = new_y;
+    DrawPacMan(pacman_x, pacman_y);
+
     // Collect pills or power pills
-    if (mazeGrid[new_y][new_x] == PILL) {
+    if (mazeGrid[pacman_y][pacman_x] == PILL) {
         score += 10;
-        mazeGrid[new_y][new_x] = EMPTY;
-    } else if (mazeGrid[new_y][new_x] == POWER_PILL) {
+        mazeGrid[pacman_y][pacman_x] = EMPTY;
+        DrawScore();
+    } else if (mazeGrid[pacman_y][pacman_x] == POWER_PILL) {
         score += 990;
-        mazeGrid[new_y][new_x] = EMPTY;
+        mazeGrid[pacman_y][pacman_x] = EMPTY;
+        DrawScore();
     }
+
 		
 		// Check for extra life
     if (score >= next_life_score) {
