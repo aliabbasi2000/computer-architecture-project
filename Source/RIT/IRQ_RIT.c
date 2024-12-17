@@ -30,12 +30,19 @@
 
 
 void RIT_IRQHandler(void) {
-    if (countdown > 0) {
-        countdown--; // Decrease the countdown by 1 every second
-        DrawCountdown(); // Update display
-    } else if (countdown == 0) {
+		interruptCounter ++;
+		if (interruptCounter >= 50 ){
+	  if (!isPaused && countdown > 0) {
+        countdown--;
+        DrawCountdown();  // Update the countdown display
+
+    }
+		interruptCounter = 0;
+		}
+		if (countdown == 0) {
         game_over_flag = 1; // Set the game-over flag when countdown reaches zero
 				DrawGameOver();
+				LPC_RIT->RICTRL &= ~0x1;
     }
 
     if (!game_over_flag) { // Allow joystick movements only if game is not over

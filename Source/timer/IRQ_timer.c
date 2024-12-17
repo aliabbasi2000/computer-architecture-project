@@ -29,10 +29,45 @@
 #include "GLCD/GLCD.h"
 #define BG_COLOR    0x0000  // Example background color
 #define TEXT_COLOR  0xFFFF  // Example text color
+#define WALL_COLOR_BLUE 0x001F
+#define WALL_COLOR    Blue
 
 //volatile uint8_t last_button_state = 1;  // Assume button is not pressed initially (logic high)
 
-volatile bool isPaused = true;  // Game starts in PAUSE mode
+volatile bool isPaused = false;  // Game starts in PAUSE mode
+
+uint16_t pauseArea[160 * 40];  // Example size (adjust as per your screen and message size)
+
+#define PAUSE_X 90  // X coordinate of the "PAUSE" message
+#define PAUSE_Y 150  // Y coordinate of the "PAUSE" message
+#define PAUSE_WIDTH 160
+#define PAUSE_HEIGHT 40
+
+
+// Function to capture the background where the "PAUSE" message will appear
+void CapturePauseArea(void) {
+    int i;
+    for ( i = 0; i < PAUSE_HEIGHT; i++) {
+            int j;
+        for ( j = 0; j < PAUSE_WIDTH; j++) {
+            pauseArea[i * PAUSE_WIDTH + j] = LCD_GetPoint(PAUSE_X + j, PAUSE_Y + i);
+        }
+    }
+}
+
+
+
+// Function to restore the background when resuming
+void RestorePauseArea(void) {
+    int i;
+    for ( i = 0; i < PAUSE_HEIGHT; i++) {
+            int j;
+        for ( j = 0; j < PAUSE_WIDTH; j++) {
+            LCD_SetPoint(PAUSE_X + j, PAUSE_Y + i, pauseArea[i * PAUSE_WIDTH + j]);
+        }
+    }
+}
+
 
 // Function to initialize INT0 (External Interrupt 0)
 void init_INT0(void) {
@@ -50,11 +85,12 @@ void EINT0_IRQHandler(void) {
     // Toggle pause state
     isPaused = !isPaused;
     if (isPaused) {
+				CapturePauseArea();
         // Display "PAUSE" message
-        GUI_Text(90, 150, (uint8_t *)"PAUSE", White, Black);
+        GUI_Text(PAUSE_X, PAUSE_Y, (uint8_t *)"PAUSE", White, Black);
     } else {
         // Clear the "PAUSE" message
-        LCD_DrawRect(80, 140, 160, 40, Black);
+        RestorePauseArea();
     }
 }
 

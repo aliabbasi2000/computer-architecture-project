@@ -2360,6 +2360,7 @@ extern uint32_t init_RIT( uint32_t RITInterval );
 extern void enable_RIT( void );
 extern void disable_RIT( void );
 extern void reset_RIT( void );
+extern int interruptCounter;
 # 10 "Source/sample.c" 2
 # 30 "Source/sample.c"
 // Maze definitions
@@ -2377,9 +2378,10 @@ int lives = 1;
 int next_life_score = 1000;
 int direction_x = 0;
 int direction_y = 0;
+int interruptCounter = 0;
 
 // Maze representation
-int mazeGrid[18 // Adjusted number of rows][16 // Keeping the columns] = {
+int mazeGrid[18][16] = {
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
     {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 3},
     {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 2, 1, 3},
@@ -2429,19 +2431,82 @@ void DrawLives(){
 }
 
 void DrawPacMan(int x, int y) {
-    int screen_x = (240 - 16 // Keeping the columns * 14) / 2 + x * 14 + 14 / 2;
+    int screen_x = (240 - 16 * 14) / 2 + x * 14 + 14 / 2;
     int screen_y = 40 + y * 14 + 14 / 2;
     LCD_DrawCircle(screen_x, screen_y, 6, 0xFFE0);
 }
 
 void ErasePacMan(int x, int y) {
-    int screen_x = (240 - 16 // Keeping the columns * 14) / 2 + x * 14 + 14 / 2;
+    int screen_x = (240 - 16 * 14) / 2 + x * 14 + 14 / 2;
     int screen_y = 40 + y * 14 + 14 / 2;
     LCD_DrawCircle(screen_x, screen_y, 6, 0x0000);
 }
 
+
+
+void DrawCountdown() {
+    char countdownText[20];
+    sprintf(countdownText, "Time: %02d", countdown); // Use %02d for two-digit formatting
+    LCD_DrawRect(100, 20, 239, 40, 0x0000); // Clear the area where the countdown will be displayed
+    GUI_Text(40, 5, (uint8_t *)countdownText, 0xF800, 0x0000); // Display the countdown text
+}
+
+void DrawGameOver() {
+    char gameOverText[] = "Game Over!";
+    LCD_DrawRect(80, 140, 160, 40, 0x0000); // Clear the area
+    GUI_Text(90, 150, (uint8_t *)gameOverText, 0xF800, 0x0000); // Display Game Over message
+}
+
+int checkVictory() {
+    // Check if all pills and power pills have been eaten
+    int i , j;
+    for ( i = 0; i < 18; i++) {
+        for ( j = 0; j < 16; j++) {
+            if (mazeGrid[i][j] == 1 || mazeGrid[i][j] == 2) {
+                return 0; // Pills are still present, not victory
+            }
+        }
+    }
+    return 1; // All pills collected
+}
+
+void DrawVictoryScreen() {
+    LCD_Clear(0x0000); // Clear the screen
+    char victoryText[] = "Victory!";
+    LCD_DrawRect(80, 140, 160, 40, 0x0000); // Clear the area
+    GUI_Text(90, 150, (uint8_t *)victoryText, 0xF800, 0x0000); // Display Victory message
+}
+
+
+void DrawMaze() {
+    int start_x = (240 - 16 * 14) / 2;
+    int start_y = 40;
+
+  int i;
+    for (i = 0; i < 18; i++) {
+      int j;
+   for (j = 0; j < 16; j++) {
+            if (mazeGrid[i][j] == 3) { // If the grid cell is a wall
+                int rect_x = start_x + j * 14;
+                int rect_y = start_y + i * 14;
+                LCD_FillRect(rect_x, rect_y, 14 -3, 14 -3, 0x001F);
+            } else if (mazeGrid[i][j] == 1) { // Draw normal pill
+                int pill_x = start_x + j * 14 + 14 / 2;
+                int pill_y = start_y + i * 14 + 14 / 2;
+                LCD_SetPoint(pill_x, pill_y, 0xFFE0);
+            } else if (mazeGrid[i][j] == 2) { // Draw power pill
+                int pill_x = start_x + j * 14 + 14 / 2;
+                int pill_y = start_y + i * 14 + 14 / 2;
+                LCD_DrawCircle(pill_x, pill_y, 4, 0xFFE0);
+            }
+        }
+    }
+}
+
+
+
 void MovePacMan(int dx, int dy) {
-    if (game_over_flag) {
+    if (game_over_flag || isPaused) {
         return;
     }
 
@@ -2449,7 +2514,7 @@ void MovePacMan(int dx, int dy) {
     int new_y = pacman_y + dy;
 
     // Check if Pac-Man is out of bounds (teleport logic)
-    if (new_y >= 0 && new_y < 18 // Adjusted number of rows && new_x >= 0 && new_x < 16 // Keeping the columns) {
+    if (new_y >= 0 && new_y < 18 && new_x >= 0 && new_x < 16) {
         // Normal movement within bounds
         if (mazeGrid[new_y][new_x] == 3) {
             return; // Block movement if hitting a wall
@@ -2457,12 +2522,12 @@ void MovePacMan(int dx, int dy) {
     } else {
         // Teleportation: Adjust coordinates based on the side
         if (new_x < 0) { // Left teleport
-            new_x = 16 // Keeping the columns - 1;
-        } else if (new_x >= 16 // Keeping the columns) { // Right teleport
+            new_x = 16 - 1;
+        } else if (new_x >= 16) { // Right teleport
             new_x = 0;
         } else if (new_y < 0) { // Top teleport
-            new_y = 18 // Adjusted number of rows - 1;
-        } else if (new_y >= 18 // Adjusted number of rows) { // Bottom teleport
+            new_y = 18 - 1;
+        } else if (new_y >= 18) { // Bottom teleport
             new_y = 0;
         }
     }
@@ -2488,45 +2553,13 @@ void MovePacMan(int dx, int dy) {
     DrawPacMan(pacman_x, pacman_y); // Draw new position
     DrawScore();
   DrawLives();
+
+  if (checkVictory()) {
+   game_over_flag = 1;
+   DrawVictoryScreen();
+  }
 }
 
-void DrawMaze() {
-    int start_x = (240 - 16 // Keeping the columns * 14) / 2;
-    int start_y = 40;
-
-  int i;
-    for (i = 0; i < 18 // Adjusted number of rows; i++) {
-      int j;
-   for (j = 0; j < 16 // Keeping the columns; j++) {
-            if (mazeGrid[i][j] == 3) { // If the grid cell is a wall
-                int rect_x = start_x + j * 14;
-                int rect_y = start_y + i * 14;
-                LCD_FillRect(rect_x, rect_y, 14 -3, 14 -3, 0x001F);
-            } else if (mazeGrid[i][j] == 1) { // Draw normal pill
-                int pill_x = start_x + j * 14 + 14 / 2;
-                int pill_y = start_y + i * 14 + 14 / 2;
-                LCD_SetPoint(pill_x, pill_y, 0xFFE0);
-            } else if (mazeGrid[i][j] == 2) { // Draw power pill
-                int pill_x = start_x + j * 14 + 14 / 2;
-                int pill_y = start_y + i * 14 + 14 / 2;
-                LCD_DrawCircle(pill_x, pill_y, 4, 0xFFE0);
-            }
-        }
-    }
-}
-
-void DrawCountdown() {
-    char countdownText[20];
-    sprintf(countdownText, "Time: %02d", countdown); // Use %02d for two-digit formatting
-    LCD_DrawRect(100, 20, 239, 40, 0x0000); // Clear the area where the countdown will be displayed
-    GUI_Text(40, 5, (uint8_t *)countdownText, 0xF800, 0x0000); // Display the countdown text
-}
-
-void DrawGameOver() {
-    char gameOverText[] = "Game Over!";
-    LCD_DrawRect(80, 140, 160, 40, 0x0000); // Clear the area
-    GUI_Text(90, 150, (uint8_t *)gameOverText, 0xF800, 0x0000); // Display Game Over message
-}
 
 void InitializeDisplay() {
     LCD_Clear(0x0000);
@@ -2546,17 +2579,15 @@ int main(void) {
     joystick_init();
     InitializeDisplay();
 
-    init_RIT(25000000); //25MHz
+    init_RIT(2500000); //25MHz
     enable_RIT();
   init_INT0();
 
     while (1) {
         if (game_over_flag) {
-            GUI_Text(80, 150, (uint8_t *)"Game Over", 0xF800, 0x0000); // Display game over message
-            while (1) {
-                __asm("wfi"); // Halt game loop
-            }
-        }
+
+            break;
+     }
     if (!isPaused){
      if (direction_x != 0 || direction_y != 0) { // Only move if a direction is set
        MovePacMan(direction_x, direction_y);

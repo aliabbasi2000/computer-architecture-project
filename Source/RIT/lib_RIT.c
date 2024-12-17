@@ -10,6 +10,8 @@
 #include "LPC17xx.h"
 #include "RIT.h"
 
+#define SYSTEM_CLOCK_FREQ 25000000
+
 /******************************************************************************
 ** Function name:		enable_RIT
 **

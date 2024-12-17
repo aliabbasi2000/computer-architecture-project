@@ -22,6 +22,7 @@ extern uint32_t init_RIT( uint32_t RITInterval );
 extern void enable_RIT( void );
 extern void disable_RIT( void );
 extern void reset_RIT( void );
+extern int interruptCounter;
 
 /*****************************************************************************
 **                            End Of File

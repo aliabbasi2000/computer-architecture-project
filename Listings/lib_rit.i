@@ -1797,20 +1797,21 @@ extern uint32_t init_RIT( uint32_t RITInterval );
 extern void enable_RIT( void );
 extern void disable_RIT( void );
 extern void reset_RIT( void );
+extern int interruptCounter;
 # 12 "Source/RIT/lib_RIT.c" 2
-# 22 "Source/RIT/lib_RIT.c"
+# 24 "Source/RIT/lib_RIT.c"
 void enable_RIT( void )
 {
   ((LPC_RIT_TypeDef *) ((0x40080000UL) + 0x30000) )->RICTRL |= (1<<3);
   return;
 }
-# 37 "Source/RIT/lib_RIT.c"
+# 39 "Source/RIT/lib_RIT.c"
 void disable_RIT( void )
 {
  ((LPC_RIT_TypeDef *) ((0x40080000UL) + 0x30000) )->RICTRL &= ~(1<<3);
   return;
 }
-# 52 "Source/RIT/lib_RIT.c"
+# 54 "Source/RIT/lib_RIT.c"
 void reset_RIT( void )
 {
   ((LPC_RIT_TypeDef *) ((0x40080000UL) + 0x30000) )->RICOUNTER = 0; // Set count value to 0

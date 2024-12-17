@@ -2285,10 +2285,43 @@ extern __attribute__((__nothrow__)) int _fisatty(FILE * ) __attribute__((__nonnu
 extern __attribute__((__nothrow__)) void __use_no_semihosting_swi(void);
 extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
 # 16 "Source/timer/IRQ_timer.c" 2
-# 33 "Source/timer/IRQ_timer.c"
+# 35 "Source/timer/IRQ_timer.c"
 //volatile uint8_t last_button_state = 1; // Assume button is not pressed initially (logic high)
 
-volatile _Bool isPaused = 1; // Game starts in PAUSE mode
+volatile _Bool isPaused = 0; // Game starts in PAUSE mode
+
+uint16_t pauseArea[160 * 40]; // Example size (adjust as per your screen and message size)
+
+
+
+
+
+
+
+// Function to capture the background where the "PAUSE" message will appear
+void CapturePauseArea(void) {
+    int i;
+    for ( i = 0; i < 40; i++) {
+            int j;
+        for ( j = 0; j < 160; j++) {
+            pauseArea[i * 160 + j] = LCD_GetPoint(90 // X coordinate of the "PAUSE" message + j, 150 // Y coordinate of the "PAUSE" message + i);
+        }
+    }
+}
+
+
+
+// Function to restore the background when resuming
+void RestorePauseArea(void) {
+    int i;
+    for ( i = 0; i < 40; i++) {
+            int j;
+        for ( j = 0; j < 160; j++) {
+            LCD_SetPoint(90 // X coordinate of the "PAUSE" message + j, 150 // Y coordinate of the "PAUSE" message + i, pauseArea[i * 160 + j]);
+        }
+    }
+}
+
 
 // Function to initialize INT0 (External Interrupt 0)
 void init_INT0(void) {
@@ -2306,14 +2339,15 @@ void EINT0_IRQHandler(void) {
     // Toggle pause state
     isPaused = !isPaused;
     if (isPaused) {
+    CapturePauseArea();
         // Display "PAUSE" message
-        GUI_Text(90, 150, (uint8_t *)"PAUSE", 0xFFFF, 0x0000);
+        GUI_Text(90 // X coordinate of the "PAUSE" message, 150 // Y coordinate of the "PAUSE" message, (uint8_t *)"PAUSE", 0xFFFF, 0x0000);
     } else {
         // Clear the "PAUSE" message
-        LCD_DrawRect(80, 140, 160, 40, 0x0000);
+        RestorePauseArea();
     }
 }
-# 118 "Source/timer/IRQ_timer.c"
+# 154 "Source/timer/IRQ_timer.c"
 void TIMER1_IRQHandler (void)
 {
   ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->IR = 1;

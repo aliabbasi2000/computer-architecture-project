@@ -1797,6 +1797,7 @@ extern uint32_t init_RIT( uint32_t RITInterval );
 extern void enable_RIT( void );
 extern void disable_RIT( void );
 extern void reset_RIT( void );
+extern int interruptCounter;
 # 12 "Source/RIT/IRQ_RIT.c" 2
 # 1 "./Source\\GLCD/GLCD.h" 1
 # 90 "./Source\\GLCD/GLCD.h"
@@ -2363,12 +2364,19 @@ extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
 # 18 "Source/RIT/IRQ_RIT.c" 2
 # 32 "Source/RIT/IRQ_RIT.c"
 void RIT_IRQHandler(void) {
-    if (countdown > 0) {
-        countdown--; // Decrease the countdown by 1 every second
-        DrawCountdown(); // Update display
-    } else if (countdown == 0) {
+  interruptCounter ++;
+  if (interruptCounter >= 50 ){
+   if (!isPaused && countdown > 0) {
+        countdown--;
+        DrawCountdown(); // Update the countdown display
+
+    }
+  interruptCounter = 0;
+  }
+  if (countdown == 0) {
         game_over_flag = 1; // Set the game-over flag when countdown reaches zero
     DrawGameOver();
+    ((LPC_RIT_TypeDef *) ((0x40080000UL) + 0x30000) )->RICTRL &= ~0x1;
     }
 
     if (!game_over_flag) { // Allow joystick movements only if game is not over
