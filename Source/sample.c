@@ -39,6 +39,7 @@ int score = 0;
 int game_over_flag = 0;
 int countdown = 60;
 int lives = 1;
+int next_life_score = 1000;
 
 // Maze representation
 int mazeGrid[GRID_ROWS][GRID_COLS] = {
@@ -133,9 +134,10 @@ void MovePacMan(int dx, int dy) {
     }
 		
 		// Check for extra life
-    if (score / 1000 > (score - 10) / 1000 ) {
-        lives++;
-    }
+    if (score >= next_life_score) {
+    lives++;
+    next_life_score += 1000;  // Update the next milestone
+		}
 
     ErasePacMan(pacman_x, pacman_y); // Erase current position
     pacman_x = new_x;
