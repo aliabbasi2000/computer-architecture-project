@@ -24,6 +24,50 @@
 **
 ******************************************************************************/
 
+
+#include <stdbool.h>
+#include "GLCD/GLCD.h"
+#define BG_COLOR    0x0000  // Example background color
+#define TEXT_COLOR  0xFFFF  // Example text color
+
+//volatile uint8_t last_button_state = 1;  // Assume button is not pressed initially (logic high)
+
+volatile bool isPaused = true;  // Game starts in PAUSE mode
+
+// Function to initialize INT0 (External Interrupt 0)
+void init_INT0(void) {
+    LPC_PINCON->PINSEL4 |= (1 << 20);  // Set P2.10 as EINT0
+    LPC_SC->EXTMODE |= (1 << 0);       // Edge-sensitive mode
+    LPC_SC->EXTPOLAR &= ~(1 << 0);     // Falling-edge sensitive
+    NVIC_EnableIRQ(EINT0_IRQn);        // Enable EINT0 interrupt in NVIC
+}
+
+
+// EINT0 Interrupt Service Routine (ISR)
+void EINT0_IRQHandler(void) {
+    // Clear the interrupt flag
+    LPC_SC->EXTINT |= (1 << 0);
+    // Toggle pause state
+    isPaused = !isPaused;
+    if (isPaused) {
+        // Display "PAUSE" message
+        GUI_Text(90, 150, (uint8_t *)"PAUSE", White, Black);
+    } else {
+        // Clear the "PAUSE" message
+        LCD_DrawRect(80, 140, 160, 40, Black);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+/*
 void TIMER0_IRQHandler (void)
 {
 	static int clear = 0;
@@ -45,7 +89,7 @@ void TIMER0_IRQHandler (void)
 				if(clear%20 == 0){
 					sprintf(time_in_char,"%4d",clear/20);
 					GUI_Text(200, 0, (uint8_t *) time_in_char, White, Blue);
-					if(clear == 200){	/* 1 seconds = 200 times * 500 us*/
+					if(clear == 200){	// 1 seconds = 200 times * 500 us
 						LCD_Clear(Black);
 						GUI_Text(0, 280, (uint8_t *) " touch here : 1 sec to clear ", Blue, White);			
 						clear = 0;
@@ -57,10 +101,10 @@ void TIMER0_IRQHandler (void)
 	else{
 		//do nothing if touch returns values out of bounds
 	}
-  LPC_TIM0->IR = 1;			/* clear interrupt flag */
+  LPC_TIM0->IR = 1;			
   return;
 }
-
+*/
 
 /******************************************************************************
 ** Function name:		Timer1_IRQHandler

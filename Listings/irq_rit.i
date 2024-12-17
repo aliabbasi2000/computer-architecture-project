@@ -1846,14 +1846,26 @@ uint8_t setCalibrationMatrix( Coordinate * displayPtr,Coordinate * screenPtr,Mat
 uint8_t getDisplayPoint(Coordinate * displayPtr,Coordinate * screenPtr,Matrix * matrixPtr );
 # 14 "Source/RIT/IRQ_RIT.c" 2
 # 1 "./Source\\timer/timer.h" 1
-# 14 "./Source\\timer/timer.h"
+# 12 "./Source\\timer/timer.h"
+# 1 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdbool.h" 1 3
+# 13 "./Source\\timer/timer.h" 2
+
+
 extern uint32_t init_timer( uint8_t timer_num, uint32_t timerInterval );
 extern void enable_timer( uint8_t timer_num );
 extern void disable_timer( uint8_t timer_num );
 extern void reset_timer( uint8_t timer_num );
 
-extern void TIMER0_IRQHandler (void);
-extern void TIMER1_IRQHandler (void);
+//extern void TIMER0_IRQHandler (void);
+//extern void TIMER1_IRQHandler (void);
+
+extern volatile _Bool isPaused;
+
+void init_TIMER0(void); // For other game timers if needed
+
+void init_INT0(void); // Initialize INT0 interrupt
+
+void EINT0_IRQHandler(void); // Interrupt handler for INT0
 # 15 "Source/RIT/IRQ_RIT.c" 2
 # 1 "./Source\\joystick/joystick.h" 1
 # 14 "./Source\\joystick/joystick.h"

@@ -1915,14 +1915,26 @@ typedef struct
 } LPC_EMAC_TypeDef;
 # 12 "Source/timer/IRQ_timer.c" 2
 # 1 "Source/timer\\timer.h" 1
-# 14 "Source/timer\\timer.h"
+# 12 "Source/timer\\timer.h"
+# 1 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdbool.h" 1 3
+# 13 "Source/timer\\timer.h" 2
+
+
 extern uint32_t init_timer( uint8_t timer_num, uint32_t timerInterval );
 extern void enable_timer( uint8_t timer_num );
 extern void disable_timer( uint8_t timer_num );
 extern void reset_timer( uint8_t timer_num );
 
-extern void TIMER0_IRQHandler (void);
-extern void TIMER1_IRQHandler (void);
+//extern void TIMER0_IRQHandler (void);
+//extern void TIMER1_IRQHandler (void);
+
+extern volatile _Bool isPaused;
+
+void init_TIMER0(void); // For other game timers if needed
+
+void init_INT0(void); // Initialize INT0 interrupt
+
+void EINT0_IRQHandler(void); // Interrupt handler for INT0
 # 13 "Source/timer/IRQ_timer.c" 2
 # 1 "Source/timer\\../GLCD/GLCD.h" 1
 # 90 "Source/timer\\../GLCD/GLCD.h"
@@ -2273,44 +2285,35 @@ extern __attribute__((__nothrow__)) int _fisatty(FILE * ) __attribute__((__nonnu
 extern __attribute__((__nothrow__)) void __use_no_semihosting_swi(void);
 extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
 # 16 "Source/timer/IRQ_timer.c" 2
-# 27 "Source/timer/IRQ_timer.c"
-void TIMER0_IRQHandler (void)
-{
- static int clear = 0;
- char time_in_char[5] = "";
- int mosse[6][2]={{1,1},{-1,-1},{1,0},{-1,0},{0,1},{0,-1}};
- int i=0;
+# 33 "Source/timer/IRQ_timer.c"
+//volatile uint8_t last_button_state = 1; // Assume button is not pressed initially (logic high)
 
-  if(getDisplayPoint(&display, Read_Ads7846(), &matrix )){
-  if(display.y < 280){
-   for(i=0;i<6;i++)
-    TP_DrawPoint(display.x+mosse[i][0],display.y+mosse[i][1]);
-   TP_DrawPoint(display.x,display.y);
-   GUI_Text(200, 0, (uint8_t *) "     ", 0x001F, 0x001F);
-   clear = 0;
-  }
-  else{
-   if(display.y <= 0x13E){
-    clear++;
-    if(clear%20 == 0){
-     sprintf(time_in_char,"%4d",clear/20);
-     GUI_Text(200, 0, (uint8_t *) time_in_char, 0xFFFF, 0x001F);
-     if(clear == 200){
-      LCD_Clear(0x0000);
-      GUI_Text(0, 280, (uint8_t *) " touch here : 1 sec to clear ", 0x001F, 0xFFFF);
-      clear = 0;
-     }
-    }
-   }
-  }
- }
- else{
-  //do nothing if touch returns values out of bounds
- }
-  ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x04000) )->IR = 1;
-  return;
+volatile _Bool isPaused = 1; // Game starts in PAUSE mode
+
+// Function to initialize INT0 (External Interrupt 0)
+void init_INT0(void) {
+    ((LPC_PINCON_TypeDef *) ((0x40000000UL) + 0x2C000) )->PINSEL4 |= (1 << 20); // Set P2.10 as EINT0
+    ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->EXTMODE |= (1 << 0); // Edge-sensitive mode
+    ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->EXTPOLAR &= ~(1 << 0); // Falling-edge sensitive
+    __NVIC_EnableIRQ(EINT0_IRQn); // Enable EINT0 interrupt in ((NVIC_Type *) ((0xE000E000UL) + 0x0100UL) )
 }
-# 74 "Source/timer/IRQ_timer.c"
+
+
+// EINT0 Interrupt Service Routine (ISR)
+void EINT0_IRQHandler(void) {
+    // Clear the interrupt flag
+    ((LPC_SC_TypeDef *) ((0x40080000UL) + 0x7C000) )->EXTINT |= (1 << 0);
+    // Toggle pause state
+    isPaused = !isPaused;
+    if (isPaused) {
+        // Display "PAUSE" message
+        GUI_Text(90, 150, (uint8_t *)"PAUSE", 0xFFFF, 0x0000);
+    } else {
+        // Clear the "PAUSE" message
+        LCD_DrawRect(80, 140, 160, 40, 0x0000);
+    }
+}
+# 118 "Source/timer/IRQ_timer.c"
 void TIMER1_IRQHandler (void)
 {
   ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->IR = 1;

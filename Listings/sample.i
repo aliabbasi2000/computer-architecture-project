@@ -1830,14 +1830,26 @@ uint8_t setCalibrationMatrix( Coordinate * displayPtr,Coordinate * screenPtr,Mat
 uint8_t getDisplayPoint(Coordinate * displayPtr,Coordinate * screenPtr,Matrix * matrixPtr );
 # 4 "Source/sample.c" 2
 # 1 "Source\\timer/timer.h" 1
-# 14 "Source\\timer/timer.h"
+# 12 "Source\\timer/timer.h"
+# 1 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdbool.h" 1 3
+# 13 "Source\\timer/timer.h" 2
+
+
 extern uint32_t init_timer( uint8_t timer_num, uint32_t timerInterval );
 extern void enable_timer( uint8_t timer_num );
 extern void disable_timer( uint8_t timer_num );
 extern void reset_timer( uint8_t timer_num );
 
-extern void TIMER0_IRQHandler (void);
-extern void TIMER1_IRQHandler (void);
+//extern void TIMER0_IRQHandler (void);
+//extern void TIMER1_IRQHandler (void);
+
+extern volatile _Bool isPaused;
+
+void init_TIMER0(void); // For other game timers if needed
+
+void init_INT0(void); // Initialize INT0 interrupt
+
+void EINT0_IRQHandler(void); // Interrupt handler for INT0
 # 5 "Source/sample.c" 2
 # 1 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 1 3
 # 71 "E:\\Keil\\Keil_v5\\ARM\\ARMCLANG\\bin\\..\\include\\stdlib.h" 3
@@ -2363,25 +2375,33 @@ int game_over_flag = 0;
 int countdown = 60;
 int lives = 1;
 int next_life_score = 1000;
+int direction_x = 0;
+int direction_y = 0;
 
 // Maze representation
-int mazeGrid[16][15] = {
-    {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-    {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 3},
-    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 2, 3},
-    {3, 1, 3, 0, 3, 1, 3, 3, 3, 3, 1, 3, 0, 1, 3},
-    {3, 1, 3, 0, 3, 1, 3, 0, 0, 3, 1, 3, 0, 1, 3},
-    {3, 1, 3, 0, 3, 1, 3, 0, 0, 3, 1, 3, 0, 1, 3},
-    {3, 1, 1, 0, 3, 1, 3, 3, 3, 3, 1, 1, 0, 1, 3},
-    {0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 1, 3, 0, 0, 0},
-    {3, 1, 1, 0, 1, 1, 3, 0, 0, 3, 1, 1, 0, 1, 3},
-    {3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 1, 3, 3, 1, 3},
-    {3, 1, 3, 0, 0, 1, 1, 1, 1, 1, 1, 3, 0, 1, 3},
-    {3, 1, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 0, 1, 3},
-    {3, 1, 3, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 3},
-    {3, 1, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 1, 3},
-    {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}
+int mazeGrid[18 // Adjusted number of rows][16 // Keeping the columns] = {
+    {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+    {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 3},
+    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 2, 1, 3},
+    {3, 1, 1, 0, 3, 1, 3, 3, 3, 3, 1, 3, 0, 1, 1, 3},
+    {3, 0, 1, 0, 3, 1, 0, 0, 1, 3, 1, 3, 0, 1, 1, 3},
+    {3, 0, 1, 0, 3, 1, 3, 0, 1, 3, 1, 3, 0, 1, 1, 3},
+    {3, 1, 1, 0, 3, 1, 3, 3, 3, 3, 1, 1, 1, 1, 1, 3},
+    {3, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+    {0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0},
+    {3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+    {3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+    {3, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 3},
+    {3, 0, 3, 1, 3, 1, 3, 3, 3, 3, 1, 1, 0, 1, 1, 3},
+    {3, 0, 3, 0, 3, 1, 3, 3, 3, 3, 1, 1, 3, 1, 1, 3},
+    {3, 1, 3, 3, 3, 1, 1, 0, 1, 1, 1, 1, 3, 3, 3, 3},
+    {3, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 3},
+    {3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3},
+    {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}
 };
+
+
+
 
 void delay_ms(unsigned int ms) {
     unsigned int i;
@@ -2409,14 +2429,14 @@ void DrawLives(){
 }
 
 void DrawPacMan(int x, int y) {
-    int screen_x = (240 - 15 * 16) / 2 + x * 16 + 16 / 2;
-    int screen_y = 40 + y * 16 + 16 / 2;
+    int screen_x = (240 - 16 // Keeping the columns * 14) / 2 + x * 14 + 14 / 2;
+    int screen_y = 40 + y * 14 + 14 / 2;
     LCD_DrawCircle(screen_x, screen_y, 6, 0xFFE0);
 }
 
 void ErasePacMan(int x, int y) {
-    int screen_x = (240 - 15 * 16) / 2 + x * 16 + 16 / 2;
-    int screen_y = 40 + y * 16 + 16 / 2;
+    int screen_x = (240 - 16 // Keeping the columns * 14) / 2 + x * 14 + 14 / 2;
+    int screen_y = 40 + y * 14 + 14 / 2;
     LCD_DrawCircle(screen_x, screen_y, 6, 0x0000);
 }
 
@@ -2429,7 +2449,7 @@ void MovePacMan(int dx, int dy) {
     int new_y = pacman_y + dy;
 
     // Check if Pac-Man is out of bounds (teleport logic)
-    if (new_y >= 0 && new_y < 16 && new_x >= 0 && new_x < 15) {
+    if (new_y >= 0 && new_y < 18 // Adjusted number of rows && new_x >= 0 && new_x < 16 // Keeping the columns) {
         // Normal movement within bounds
         if (mazeGrid[new_y][new_x] == 3) {
             return; // Block movement if hitting a wall
@@ -2437,12 +2457,12 @@ void MovePacMan(int dx, int dy) {
     } else {
         // Teleportation: Adjust coordinates based on the side
         if (new_x < 0) { // Left teleport
-            new_x = 15 - 1;
-        } else if (new_x >= 15) { // Right teleport
+            new_x = 16 // Keeping the columns - 1;
+        } else if (new_x >= 16 // Keeping the columns) { // Right teleport
             new_x = 0;
         } else if (new_y < 0) { // Top teleport
-            new_y = 16 - 1;
-        } else if (new_y >= 16) { // Bottom teleport
+            new_y = 18 // Adjusted number of rows - 1;
+        } else if (new_y >= 18 // Adjusted number of rows) { // Bottom teleport
             new_y = 0;
         }
     }
@@ -2471,24 +2491,24 @@ void MovePacMan(int dx, int dy) {
 }
 
 void DrawMaze() {
-    int start_x = (240 - 15 * 16) / 2;
+    int start_x = (240 - 16 // Keeping the columns * 14) / 2;
     int start_y = 40;
 
   int i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 18 // Adjusted number of rows; i++) {
       int j;
-   for (j = 0; j < 15; j++) {
+   for (j = 0; j < 16 // Keeping the columns; j++) {
             if (mazeGrid[i][j] == 3) { // If the grid cell is a wall
-                int rect_x = start_x + j * 16;
-                int rect_y = start_y + i * 16;
-                LCD_FillRect(rect_x, rect_y, 16 -3, 16 -3, 0x001F);
+                int rect_x = start_x + j * 14;
+                int rect_y = start_y + i * 14;
+                LCD_FillRect(rect_x, rect_y, 14 -3, 14 -3, 0x001F);
             } else if (mazeGrid[i][j] == 1) { // Draw normal pill
-                int pill_x = start_x + j * 16 + 16 / 2;
-                int pill_y = start_y + i * 16 + 16 / 2;
+                int pill_x = start_x + j * 14 + 14 / 2;
+                int pill_y = start_y + i * 14 + 14 / 2;
                 LCD_SetPoint(pill_x, pill_y, 0xFFE0);
             } else if (mazeGrid[i][j] == 2) { // Draw power pill
-                int pill_x = start_x + j * 16 + 16 / 2;
-                int pill_y = start_y + i * 16 + 16 / 2;
+                int pill_x = start_x + j * 14 + 14 / 2;
+                int pill_y = start_y + i * 14 + 14 / 2;
                 LCD_DrawCircle(pill_x, pill_y, 4, 0xFFE0);
             }
         }
@@ -2528,6 +2548,7 @@ int main(void) {
 
     init_RIT(25000000); //25MHz
     enable_RIT();
+  init_INT0();
 
     while (1) {
         if (game_over_flag) {
@@ -2536,6 +2557,11 @@ int main(void) {
                 __asm("wfi"); // Halt game loop
             }
         }
+    if (!isPaused){
+     if (direction_x != 0 || direction_y != 0) { // Only move if a direction is set
+       MovePacMan(direction_x, direction_y);
+     }
+    }
         __asm("wfi"); // Wait for interrupt
     }
 }
