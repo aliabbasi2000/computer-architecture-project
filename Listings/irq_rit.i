@@ -2367,8 +2367,6 @@ extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
 extern volatile int current_direction_x;
 extern volatile int current_direction_y;
 
-
-
 void RIT_IRQHandler(void) {
 
   static int power_pill_count = 0;
@@ -2392,9 +2390,9 @@ void RIT_IRQHandler(void) {
         return;
     }
 
-    if (!game_over_flag) { // Allow joystick movements only if the game is not over
+    if (!game_over_flag && !isPaused) { // Allow joystick movements only if the game is not over
         // Update direction only on joystick input
-        if (joystick_read_up()) {
+   if (joystick_read_up()) {
             current_direction_x = 0;
             current_direction_y = -1; // Move up
         } else if (joystick_read_down()) {
@@ -2407,6 +2405,7 @@ void RIT_IRQHandler(void) {
             current_direction_x = 1;
             current_direction_y = 0; // Move right
         }
+
 
         // Continue moving Pac-Man in the current direction
         MovePacMan(current_direction_x, current_direction_y);
@@ -2424,6 +2423,7 @@ void RIT_IRQHandler(void) {
             }
         }
     }
+  //reset_RIT();
 
     ((LPC_RIT_TypeDef *) ((0x40080000UL) + 0x30000) )->RICTRL |= 0x1; // Clear interrupt flag
 }

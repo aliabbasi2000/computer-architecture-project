@@ -304,11 +304,15 @@ int main(void) {
 
             break;
 					}
-				if (!isPaused){
+
+				else if (!isPaused){
 					if (direction_x != 0 || direction_y != 0) {  // Only move if a direction is set
 							MovePacMan(direction_x, direction_y);
 					}
 				}
+				
+
+				
         __ASM("wfi"); // Wait for interrupt
     }
 }
