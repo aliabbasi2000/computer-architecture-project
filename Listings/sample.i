@@ -2387,8 +2387,8 @@ volatile int current_direction_y = 0; // Y direction (vertical movement)
 
 int mazeGrid[18][16] = {
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-    {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 3},
-    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 2, 1, 3},
+    {3, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 3},
+    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 3},
     {3, 1, 1, 0, 3, 1, 3, 3, 3, 3, 1, 3, 0, 1, 1, 3},
     {3, 0, 1, 0, 3, 1, 0, 0, 1, 3, 1, 3, 0, 1, 1, 3},
     {3, 0, 1, 0, 3, 1, 3, 0, 1, 3, 1, 3, 0, 1, 1, 3},
@@ -2401,7 +2401,7 @@ int mazeGrid[18][16] = {
     {3, 0, 3, 1, 3, 1, 3, 3, 3, 3, 1, 1, 0, 1, 1, 3},
     {3, 0, 3, 0, 3, 1, 3, 3, 3, 3, 1, 1, 3, 1, 1, 3},
     {3, 1, 3, 3, 3, 1, 1, 0, 1, 1, 1, 1, 3, 3, 3, 3},
-    {3, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 3},
+    {3, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 3},
     {3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3},
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}
 };
@@ -2506,6 +2506,7 @@ void DrawMaze() {
 
 
 
+
 void MovePacMan(int dx, int dy) {
     if (game_over_flag || isPaused) {
         return;
@@ -2542,7 +2543,7 @@ void MovePacMan(int dx, int dy) {
         mazeGrid[pacman_y][pacman_x] = 0;
         DrawScore();
     } else if (mazeGrid[pacman_y][pacman_x] == 2) {
-        score += 990;
+        score += 50;
         mazeGrid[pacman_y][pacman_x] = 0;
         DrawScore();
     }
@@ -2568,12 +2569,28 @@ void MovePacMan(int dx, int dy) {
 }
 
 
+// Function to generate a power pill
+void GeneratePowerPill() {
+    int generated = 0;
+    while (generated < 1) {
+        int row = rand() % 18;
+        int col = rand() % 16;
+        if (mazeGrid[row][col] == 1) {
+            mazeGrid[row][col] = 2;
+            DrawMaze();
+            generated++;
+        }
+    }
+}
+
+
 void InitializeDisplay() {
     LCD_Clear(0x0000);
     DrawScore();
   DrawCountdown();
   DrawLives();
     DrawMaze();
+
 
     pacman_x = 1;
     pacman_y = 1;

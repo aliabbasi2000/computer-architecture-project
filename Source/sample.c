@@ -51,8 +51,8 @@ volatile int current_direction_y = 0; // Y direction (vertical movement)
 /* real maze */
 int mazeGrid[GRID_ROWS][GRID_COLS] = {
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-    {3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 3},
-    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 2, 1, 3},
+    {3, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 3},
+    {3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 3},
     {3, 1, 1, 0, 3, 1, 3, 3, 3, 3, 1, 3, 0, 1, 1, 3},
     {3, 0, 1, 0, 3, 1, 0, 0, 1, 3, 1, 3, 0, 1, 1, 3},
     {3, 0, 1, 0, 3, 1, 3, 0, 1, 3, 1, 3, 0, 1, 1, 3},
@@ -65,7 +65,7 @@ int mazeGrid[GRID_ROWS][GRID_COLS] = {
     {3, 0, 3, 1, 3, 1, 3, 3, 3, 3, 1, 1, 0, 1, 1, 3},
     {3, 0, 3, 0, 3, 1, 3, 3, 3, 3, 1, 1, 3, 1, 1, 3},
     {3, 1, 3, 3, 3, 1, 1, 0, 1, 1, 1, 1, 3, 3, 3, 3},
-    {3, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 3},
+    {3, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 3},
     {3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3},
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}
 };
@@ -198,6 +198,7 @@ void DrawMaze() {
 
 
 
+
 void MovePacMan(int dx, int dy) {
     if (game_over_flag || isPaused) {
         return;
@@ -234,7 +235,7 @@ void MovePacMan(int dx, int dy) {
         mazeGrid[pacman_y][pacman_x] = EMPTY;
         DrawScore();
     } else if (mazeGrid[pacman_y][pacman_x] == POWER_PILL) {
-        score += 990;
+        score += 50;
         mazeGrid[pacman_y][pacman_x] = EMPTY;
         DrawScore();
     }
@@ -260,12 +261,28 @@ void MovePacMan(int dx, int dy) {
 }
 
 
+// Function to generate a power pill
+void GeneratePowerPill() {
+    int generated = 0;
+    while (generated < 1) {
+        int row = rand() % GRID_ROWS;
+        int col = rand() % GRID_COLS;
+        if (mazeGrid[row][col] == PILL) {
+            mazeGrid[row][col] = POWER_PILL;
+            DrawMaze();
+            generated++;
+        }
+    }
+}
+
+
 void InitializeDisplay() {
     LCD_Clear(BG_COLOR);
     DrawScore();
 		DrawCountdown();
 		DrawLives();
     DrawMaze();
+		
 
     pacman_x = 1;
     pacman_y = 1;

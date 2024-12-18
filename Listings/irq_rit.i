@@ -2367,7 +2367,15 @@ extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
 extern volatile int current_direction_x;
 extern volatile int current_direction_y;
 
+
+
 void RIT_IRQHandler(void) {
+
+  static int power_pill_count = 0;
+  static int power_pill_timer = 0;
+   static int active_power_pills = 0;
+  static int power_pill_interval = 100; // Random interval for power pill generation
+
     interruptCounter++;
     if (interruptCounter >= 14) {
         if (!isPaused && countdown > 0) {
@@ -2402,6 +2410,19 @@ void RIT_IRQHandler(void) {
 
         // Continue moving Pac-Man in the current direction
         MovePacMan(current_direction_x, current_direction_y);
+
+
+    if (active_power_pills < 6) { // Ensure limit of 6 active power pills
+            power_pill_timer++;
+            if (power_pill_timer >= power_pill_interval) { // Generate pill at random intervals
+                if (GeneratePowerPill()) { // Only increase active count if successfully placed
+                    active_power_pills++;
+                    power_pill_count++;
+                }
+                power_pill_timer = 0; // Reset timer
+                power_pill_interval = (rand() % 101) + 50; // New interval: random between 50-150
+            }
+        }
     }
 
     ((LPC_RIT_TypeDef *) ((0x40080000UL) + 0x30000) )->RICTRL |= 0x1; // Clear interrupt flag
