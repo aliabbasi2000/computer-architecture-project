@@ -2286,11 +2286,11 @@ extern __attribute__((__nothrow__)) void __use_no_semihosting_swi(void);
 extern __attribute__((__nothrow__)) void __use_no_semihosting(void);
 # 16 "Source/timer/IRQ_timer.c" 2
 # 35 "Source/timer/IRQ_timer.c"
-//volatile uint8_t last_button_state = 1; // Assume button is not pressed initially (logic high)
+//volatile uint8_t last_button_state = 1;
 
 volatile _Bool isPaused = 0; // Game starts in PAUSE mode
 
-uint16_t pauseArea[160 * 40]; // Example size (adjust as per your screen and message size)
+uint16_t pauseArea[160 * 40];
 
 
 
@@ -2346,8 +2346,8 @@ void EINT0_IRQHandler(void) {
         RestorePauseArea();
     }
 }
-# 153 "Source/timer/IRQ_timer.c"
-void TIMER1_IRQHandler (void)
+# 106 "Source/timer/IRQ_timer.c"
+void TIMER1_IRQHandler(void)
 {
   ((LPC_TIM_TypeDef *) ((0x40000000UL) + 0x08000) )->IR = 1;
   return;

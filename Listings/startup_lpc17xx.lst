@@ -424,11 +424,11 @@ ARM Macro Assembler    Page 7
 Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M3 --depe
 nd=.\objects\startup_lpc17xx.d -o.\objects\startup_lpc17xx.o -I.\Source -I.\Sou
 rce\CMSIS_core -I.\Source\GLCD -I.\Source\timer -I.\Source\button_EXINT -I.\Sou
-rce\TouchPanel -I.\RTE\_LandTiger_LPC1768__release_ -IE:\Keil\Installer\ARM\CMS
-IS\6.1.0\CMSIS\Core\Include -IE:\Keil\Installer\Keil\LPC1700_DFP\2.7.1\Device\I
-nclude --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 541" --p
-redefine="LPC175x_6x SETA 1" --predefine="_RTE_ SETA 1" --list=.\listings\start
-up_lpc17xx.lst Source\startup_LPC17xx.s
+rce\TouchPanel -I.\RTE\_SW_DEBUG -IE:\Keil\Installer\ARM\CMSIS\6.1.0\CMSIS\Core
+\Include -IE:\Keil\Installer\Keil\LPC1700_DFP\2.7.1\Device\Include --predefine=
+"__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 541" --predefine="LPC175x_6
+x SETA 1" --predefine="_RTE_ SETA 1" --list=.\listings\startup_lpc17xx.lst Sour
+ce\startup_LPC17xx.s
 
 
 

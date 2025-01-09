@@ -35,10 +35,10 @@ void RIT_IRQHandler(void) {
 		static int power_pill_count = 0;
 		static int power_pill_timer = 0;
 	  static int active_power_pills = 0;
-		static int power_pill_interval = 100; // Random interval for power pill generation
+		static int power_pill_interval = 100;
 		
     interruptCounter++;
-    if (interruptCounter >= 14) {
+    if (interruptCounter >= 1) {
         if (!isPaused && countdown > 0) {
             countdown--;
             DrawCountdown();  // Update the countdown display
