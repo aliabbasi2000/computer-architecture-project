@@ -14,7 +14,11 @@ F (.\Source\system_LPC17xx.c)(0x677C5BB9)(-xc -std=c90 --target=arm-arm-none-eab
 I (E:\Keil\Installer\Keil\LPC1700_DFP\2.7.1\Device\Include\LPC17xx.h)(0x675A2A19)
 I (Source\CMSIS_core\core_cm3.h)(0x675ACFA5)
 I (E:\Keil\Installer\Keil\LPC1700_DFP\2.7.1\Device\Include\system_LPC17xx.h)(0x675A2A19)
+<<<<<<< HEAD
 F (.\Source\timer\IRQ_timer.c)(0x677E5DC9)(-xc -std=c90 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -fno-function-sections -I ./Source -I ./Source/CMSIS_core -I ./Source/GLCD -I ./Source/timer -I ./Source/button_EXINT -I ./Source/TouchPanel-I./RTE/_LandTiger_LPC1768__release_-IE:/Keil/Installer/ARM/CMSIS/6.1.0/CMSIS/Core/Include-IE:/Keil/Installer/Keil/LPC1700_DFP/2.7.1/Device/Include-D__UVISION_VERSION="541" -DLPC175x_6x -D_RTE_-o ./objects/irq_timer.o -MMD)
+=======
+F (.\Source\timer\IRQ_timer.c)(0x6762D6F7)(-xc -std=c90 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-4 -O1 -fno-function-sections -I ./Source -I ./Source/CMSIS_core -I ./Source/GLCD -I ./Source/timer -I ./Source/button_EXINT -I ./Source/TouchPanel-I./RTE/_LandTiger_LPC1768__release_-IE:/Keil/Installer/ARM/CMSIS/6.1.0/CMSIS/Core/Include-IE:/Keil/Installer/Keil/LPC1700_DFP/2.7.1/Device/Include-D__UVISION_VERSION="541" -DLPC175x_6x -D_RTE_-o ./objects/irq_timer.o -MMD)
+>>>>>>> 0ce04adb2fc12722bf85e25a097d91b97a26a978
 I (E:\Keil\Installer\Keil\LPC1700_DFP\2.7.1\Device\Include\LPC17xx.h)(0x675A2A19)
 I (Source\CMSIS_core\core_cm3.h)(0x675ACFA5)
 I (E:\Keil\Installer\Keil\LPC1700_DFP\2.7.1\Device\Include\system_LPC17xx.h)(0x675A2A19)
